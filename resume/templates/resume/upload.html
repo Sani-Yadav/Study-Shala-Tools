@@ -1,0 +1,204 @@
+<style>
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6fa; }
+    .resume-container { max-width: 800px; margin: 30px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 12px #0001; padding: 32px 28px; }
+    h2 { text-align: center; color: #2d3a4b; margin-bottom: 24px; }
+    h3 { color: #1a2330; margin-top: 24px; margin-bottom: 10px; border-left: 4px solid #4f8cff; padding-left: 8px; }
+    .section-card { background: #f8fafd; border-radius: 8px; padding: 18px 16px 8px 16px; margin-bottom: 18px; box-shadow: 0 1px 4px #00000008; }
+    label { font-weight: 500; color: #2d3a4b; }
+    input, textarea, select { width: 100%; padding: 7px 10px; margin: 6px 0 14px 0; border: 1px solid #cfd8dc; border-radius: 5px; font-size: 15px; background: #f9fbfc; }
+    input[type="file"] { background: #fff; }
+    .form-row { display: flex; gap: 18px; }
+    .form-row > div { flex: 1; }
+    .add-btn, .remove-btn { background: #e3f0ff; color: #2563eb; border: none; border-radius: 4px; padding: 3px 10px; font-size: 13px; margin-bottom: 8px; cursor: pointer; }
+    .add-btn:hover, .remove-btn:hover { background: #2563eb; color: #fff; }
+    .submit-btn { background: linear-gradient(90deg, #2563eb 60%, #4f8cff 100%); color: #fff; border: none; border-radius: 6px; padding: 12px 0; font-size: 18px; font-weight: 600; width: 100%; margin-top: 18px; box-shadow: 0 2px 8px #2563eb22; cursor: pointer; transition: background 0.2s; }
+    .submit-btn:hover { background: linear-gradient(90deg, #4f8cff 60%, #2563eb 100%); }
+</style>
+<div class="resume-container">
+<h2>Professional Resume Builder</h2>
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="section-card">
+    <h3>Personal Information</h3>
+    <div class="form-row">
+      <div>{{ form.profile_image.label_tag }}{{ form.profile_image }}</div>
+      <div>{{ form.full_name.label_tag }}{{ form.full_name }}</div>
+    </div>
+    <div class="form-row">
+      <div>{{ form.email.label_tag }}{{ form.email }}</div>
+      <div>{{ form.phone.label_tag }}{{ form.phone }}</div>
+    </div>
+    <div class="form-row">
+      <div>{{ form.location.label_tag }}{{ form.location }}</div>
+      <div>{{ form.linkedin.label_tag }}{{ form.linkedin }}</div>
+    </div>
+    <div class="form-row">
+      <div>{{ form.github.label_tag }}{{ form.github }}</div>
+      <div>{{ form.portfolio_url.label_tag }}{{ form.portfolio_url }}</div>
+    </div>
+  </div>
+  <div class="section-card">
+    <h3>Summary & Skills</h3>
+    {{ form.summary.label_tag }}{{ form.summary }}
+    <div class="form-row">
+      <div>{{ form.technical_skills.label_tag }}{{ form.technical_skills }}</div>
+      <div>{{ form.soft_skills.label_tag }}{{ form.soft_skills }}</div>
+    </div>
+    <div class="form-row">
+      <div>{{ form.languages.label_tag }}{{ form.languages }}</div>
+      <div>{{ form.hobbies.label_tag }}{{ form.hobbies }}</div>
+    </div>
+  </div>
+  <div class="section-card">
+    <h3>Education</h3>
+    {{ education_formset.management_form }}
+    {% for form in education_formset %}
+      <div style="border-bottom:1px solid #e3e8ee; margin-bottom:10px; padding-bottom:8px;">
+        <div class="form-row">
+          <div>{{ form.degree.label_tag }}{{ form.degree }}</div>
+          <div>{{ form.institution.label_tag }}{{ form.institution }}</div>
+        </div>
+        <div class="form-row">
+          <div>{{ form.year.label_tag }}{{ form.year }}</div>
+          <div>{{ form.result.label_tag }}{{ form.result }}</div>
+        </div>
+        {% if education_formset.can_delete %}{{ form.DELETE }} <span class="remove-btn">Remove</span>{% endif %}
+      </div>
+    {% endfor %}
+    <button type="button" class="add-btn" onclick="addForm('education')">+ Add Education</button>
+  </div>
+  <div class="section-card">
+    <h3>Experience</h3>
+    {{ experience_formset.management_form }}
+    {% for form in experience_formset %}
+      <div style="border-bottom:1px solid #e3e8ee; margin-bottom:10px; padding-bottom:8px;">
+        <div class="form-row">
+          <div>{{ form.job_title.label_tag }}{{ form.job_title }}</div>
+          <div>{{ form.company.label_tag }}{{ form.company }}</div>
+        </div>
+        <div class="form-row">
+          <div>{{ form.duration.label_tag }}{{ form.duration }}</div>
+        </div>
+        {{ form.description.label_tag }}{{ form.description }}
+        {% if experience_formset.can_delete %}{{ form.DELETE }} <span class="remove-btn">Remove</span>{% endif %}
+      </div>
+    {% endfor %}
+    <button type="button" class="add-btn" onclick="addForm('experience')">+ Add Experience</button>
+  </div>
+  <div class="section-card">
+    <h3>Projects</h3>
+    {{ project_formset.management_form }}
+    {% for form in project_formset %}
+      <div style="border-bottom:1px solid #e3e8ee; margin-bottom:10px; padding-bottom:8px;">
+        <div class="form-row">
+          <div>{{ form.title.label_tag }}{{ form.title }}</div>
+          <div>{{ form.tech_stack.label_tag }}{{ form.tech_stack }}</div>
+        </div>
+        {{ form.description.label_tag }}{{ form.description }}
+        <div>{{ form.live_url.label_tag }}{{ form.live_url }}</div>
+        {% if project_formset.can_delete %}{{ form.DELETE }} <span class="remove-btn">Remove</span>{% endif %}
+      </div>
+    {% endfor %}
+    <button type="button" class="add-btn" onclick="addForm('project')">+ Add Project</button>
+  </div>
+  <div class="section-card">
+    <h3>Certifications</h3>
+    {{ certification_formset.management_form }}
+    {% for form in certification_formset %}
+      <div style="border-bottom:1px solid #e3e8ee; margin-bottom:10px; padding-bottom:8px;">
+        <div class="form-row">
+          <div>{{ form.title.label_tag }}{{ form.title }}</div>
+          <div>{{ form.platform.label_tag }}{{ form.platform }}</div>
+        </div>
+        <div class="form-row">
+          <div>{{ form.year.label_tag }}{{ form.year }}</div>
+        </div>
+        {% if certification_formset.can_delete %}{{ form.DELETE }} <span class="remove-btn">Remove</span>{% endif %}
+      </div>
+    {% endfor %}
+    <button type="button" class="add-btn" onclick="addForm('certification')">+ Add Certification</button>
+  </div>
+  <div class="section-card">
+    <h3>Achievements</h3>
+    {{ achievement_formset.management_form }}
+    {% for form in achievement_formset %}
+      <div style="border-bottom:1px solid #e3e8ee; margin-bottom:10px; padding-bottom:8px;">
+        {{ form.description.label_tag }}{{ form.description }}
+        {% if achievement_formset.can_delete %}{{ form.DELETE }} <span class="remove-btn">Remove</span>{% endif %}
+      </div>
+    {% endfor %}
+    <button type="button" class="add-btn" onclick="addForm('achievement')">+ Add Achievement</button>
+  </div>
+  <div class="section-card">
+    <h3>References</h3>
+    {{ reference_formset.management_form }}
+    {% for form in reference_formset %}
+      <div style="border-bottom:1px solid #e3e8ee; margin-bottom:10px; padding-bottom:8px;">
+        <div class="form-row">
+          <div>{{ form.name.label_tag }}{{ form.name }}</div>
+          <div>{{ form.relationship.label_tag }}{{ form.relationship }}</div>
+        </div>
+        <div>{{ form.contact_info.label_tag }}{{ form.contact_info }}</div>
+        {% if reference_formset.can_delete %}{{ form.DELETE }} <span class="remove-btn">Remove</span>{% endif %}
+      </div>
+    {% endfor %}
+    <button type="button" class="add-btn" onclick="addForm('reference')">+ Add Reference</button>
+  </div>
+  <button type="submit" class="submit-btn">Generate Resume</button>
+</form>
+</div>
+
+<script>
+// Function to add new formset entries
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips if any
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
+// Function to add new formset entries
+function addForm(formType) {
+    const formsetContainer = document.getElementById(`${formType}-formset`);
+    const totalForms = document.getElementById(`id_${formType}-TOTAL_FORMS`);
+    const formNum = parseInt(totalForms.value);
+    
+    // Clone the first form in the formset
+    const newForm = document.querySelector(`.${formType}-form`).cloneNode(true);
+    
+    // Update the form field IDs and names
+    newForm.innerHTML = newForm.innerHTML.replace(/\d+-/g, `${formNum}-`);
+    
+    // Add the new form to the container
+    formsetContainer.appendChild(newForm);
+    
+    // Update the total number of forms
+    totalForms.value = formNum + 1;
+    
+    // Add remove button functionality
+    const removeBtn = newForm.querySelector('.remove-btn');
+    if (removeBtn) {
+        removeBtn.addEventListener('click', function() {
+            newForm.remove();
+            totalForms.value = parseInt(totalForms.value) - 1;
+        });
+    }
+}
+
+// Add event listeners to existing remove buttons
+document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('remove-btn')) {
+        const formDiv = e.target.closest('.dynamic-form');
+        if (formDiv) {
+            formDiv.remove();
+            // Update the total forms count if needed
+            const formType = formDiv.closest('[id$="-formset"]').id.replace('-formset', '');
+            const totalForms = document.getElementById(`id_${formType}-TOTAL_FORMS`);
+            if (totalForms) {
+                totalForms.value = parseInt(totalForms.value) - 1;
+            }
+        }
+    }
+});
+</script>
