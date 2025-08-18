@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Employee ID Card{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white text-center">
+          <h3 class="mb-0">Employee ID Card</h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 text-center">
+              {% if employee.profile_image %}
+                <img src="{{ employee.profile_image.url }}" class="img-fluid rounded border mb-2" style="max-height: 120px; object-fit: cover;">
+              {% else %}
+                <div class="bg-light rounded p-3 text-center">
+                  <i class="fas fa-user fa-3x text-secondary"></i>
+                </div>
+              {% endif %}
+              {% if employee.qr_code %}
+                <img src="{{ employee.qr_code.url }}" class="img-fluid mt-2" style="max-width: 80px;">
+              {% endif %}
+            </div>
+            <div class="col-md-8">
+              <table class="table table-sm table-bordered mb-0" style="font-size: 15px;">
+                <tr><th>Name</th><td>{{ employee.full_name }}</td></tr>
+                <tr><th>Employee ID</th><td>{{ employee.employee_id }}</td></tr>
+                <tr><th>Designation</th><td>{{ employee.designation }}</td></tr>
+                <tr><th>Department</th><td>{{ employee.department }}</td></tr>
+                <tr><th>Company</th><td>{{ employee.company }}</td></tr>
+                <tr><th>Contact</th><td>{{ employee.contact }}</td></tr>
+                <tr><th>Email</th><td>{{ employee.email }}</td></tr>
+                <tr><th>Join Date</th><td>{{ employee.join_date }}</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

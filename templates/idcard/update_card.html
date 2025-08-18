@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+
+{% block title %}Update ID Card - StudyShala{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header with Logo and Title -->
+            <div class="text-center mb-4">
+                <h4 class="text-primary mb-2">StudyShala ID Card</h4>
+                <p class="text-muted small">Update your digital identification</p>
+            </div>
+            
+            <!-- User Profile Section -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <!-- Name Section -->
+                    <div class="text-center mb-4">
+                        <h3 class="text-primary">{{ form.instance.Full_Name|default:'Full Name' }}</h3>
+                        <p class="text-muted mb-0">Student ID: {{ form.instance.student_id|default:'-' }}</p>
+                    </div>
+                    
+                    <div class="d-flex align-items-center justify-content-center">
+                        {% if form.instance.photo %}
+                            <div class="text-center me-4">
+                                <img src="{{ form.instance.photo.url }}" 
+                                     class="rounded-circle border" 
+                                     width="120" 
+                                     height="120" 
+                                     alt="Profile">
+                                <p class="mt-2 mb-0 small text-muted">Current Photo</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Update Form -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="alert alert-light border mb-4" role="alert">
+                            <i class="fas fa-info-circle text-primary me-2"></i>
+                            <span class="small">Please update your ID card details below</span>
+                        </div>
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Card Details Section -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.card_number }}
+                                    <label for="{{ form.card_number.id_for_label }}" class="form-label">Card Number</label>
+                                    {% if form.card_number.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.card_number.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text text-muted small">Unique ID card number</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.student_id }}
+                                    <label for="{{ form.student_id.id_for_label }}" class="form-label">Student ID</label>
+                                    {% if form.student_id.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.student_id.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text text-muted small">Your roll/registration number</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Education Details -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.college }}
+                                    <label for="{{ form.college.id_for_label }}" class="form-label">College / School</label>
+                                    {% if form.college.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.college.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text text-muted small">Your educational institution</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.contact_number.id_for_label }}" class="form-label">Contact Number</label>
+                                    {{ form.contact_number }}
+                                    {% if form.contact_number.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.contact_number.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text">Your WhatsApp number preferred.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.course }}
+                                    <label for="{{ form.course.id_for_label }}" class="form-label">Course</label>
+                                    {% if form.course.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.course.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text text-muted small">Your course/program</div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    {{ form.year }}
+                                    <label for="{{ form.year.id_for_label }}" class="form-label">Year / Batch</label>
+                                    {% if form.year.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {{ form.year.errors.0 }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text text-muted small">Academic year or batch</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.dob.id_for_label }}" class="form-label">Date of Birth (Optional)</label>
+                                    {{ form.dob }}
+                                    {% if form.dob.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.dob.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.expiry_date.id_for_label }}" class="form-label">Expiry Date</label>
+                                    {{ form.expiry_date }}
+                                    {% if form.expiry_date.errors %}
+                                        <div class="text-danger">
+                                            {% for error in form.expiry_date.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <div class="form-text">When your ID card will expire.</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.address.id_for_label }}" class="form-label">Address (Optional)</label>
+                            {{ form.address }}
+                            {% if form.address.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.address.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Your address (City, State, Country).</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.photo.id_for_label }}" class="form-label">Photo (Passport Size)</label>
+                            {% if form.instance.photo %}
+                                <div class="mb-2">
+                                    <img src="{{ form.instance.photo.url }}" alt="Current Photo" class="img-thumbnail" style="max-height: 100px;">
+                                    <p class="form-text">Current photo</p>
+                                </div>
+                            {% endif %}
+                            {{ form.photo }}
+                            {% if form.photo.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.photo.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Upload a new photo or leave blank to keep the current one.</div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            {{ form.is_active }}
+                            <label class="form-check-label" for="{{ form.is_active.id_for_label }}">Active</label>
+                            {% if form.is_active.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.is_active.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Uncheck to deactivate your ID card.</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update ID Card
+                            </button>
+                            <a href="{% url 'idcard:id_card_view' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add Bootstrap classes to form fields
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('{{ form.card_number.id_for_label }}').classList.add('form-control');
+        document.getElementById('{{ form.expiry_date.id_for_label }}').classList.add('form-control');
+        document.getElementById('{{ form.photo.id_for_label }}').classList.add('form-control');
+        document.getElementById('{{ form.is_active.id_for_label }}').classList.add('form-check-input');
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,1254 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Professional Resume Builder - StudyShala{% endblock %}
+
+{% block content %}
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Custom CSS -->
+<style>
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #3498db;
+        --accent-color: #e74c3c;
+        --light-gray: #f8f9fa;
+        --dark-gray: #333;
+    }
+    
+    body {
+        font-family: 'Roboto', sans-serif;
+        line-height: 1.6;
+        color: var(--dark-gray);
+        background-color: #f5f7fa;
+    }
+    
+    .resume-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        background: white;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        padding: 0;
+    }
+    
+    .resume-header {
+        background: var(--primary-color);
+        color: white;
+        padding: 2rem 3rem;
+        position: relative;
+    }
+    
+    .profile-img-container {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 1rem;
+        position: relative;
+    }
+    
+    .profile-img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 4px solid white;
+        object-fit: cover;
+    }
+    
+    .camera-icon {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background: var(--secondary-color);
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    
+    .section {
+        padding: 1.5rem 3rem;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .section:last-child {
+        border-bottom: none;
+    }
+    
+    .section-title {
+        color: var(--primary-color);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--secondary-color);
+        display: inline-block;
+    }
+    
+    .form-control, .form-select {
+        border-radius: 4px;
+        border: 1px solid #ddd;
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--secondary-color);
+        box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+    
+    .btn {
+        border-radius: 4px;
+        font-weight: 500;
+        padding: 0.5rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+    
+    .btn-primary:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+        transform: translateY(-1px);
+    }
+    
+    .btn-outline-primary {
+        color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: var(--secondary-color);
+        border-color: var(--secondary-color);
+    }
+    
+    /* Print specific styles */
+    @media print {
+        body {
+            font-size: 12px;
+            background: white;
+        }
+        
+        .no-print {
+            display: none !important;
+        }
+        
+        .resume-container {
+            box-shadow: none;
+            margin: 0;
+            max-width: 100%;
+        }
+        
+        .section {
+            padding: 1rem 2rem;
+            page-break-inside: avoid;
+        }
+        
+        .resume-header {
+            padding: 1.5rem 2rem;
+        }
+    }
+</style>
+
+<div class="resume-container">
+    <!-- Header Section -->
+    <div class="resume-header text-center">
+        <div class="profile-img-container">
+            {% if resume.profile_image %}
+                <img src="{{ resume.profile_image.url }}" class="profile-img" id="profile-preview">
+            {% else %}
+                <img src="{% static 'images/default-avatar.png' %}" class="profile-img" id="profile-preview">
+            {% endif %}
+            <label for="profile_image" class="camera-icon">
+                <i class="fas fa-camera"></i>
+            </label>
+            <input type="file" class="d-none" id="profile_image" name="profile_image" accept="image/*" onchange="previewImage(this)">
+        </div>
+        
+        <h1 class="mb-2" id="full_name_display">{{ resume.full_name|default:"Your Name" }}</h1>
+        <p class="mb-0" id="job_title_display">{{ resume.job_title|default:"Professional Title" }}</p>
+    </div>
+    
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show m-3 rounded-0" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+    
+    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        {% csrf_token %}
+        
+        <!-- Personal Information Section -->
+        <div class="section">
+            <h3 class="section-title">
+                <i class="fas fa-user-circle me-2"></i>Personal Information
+            </h3>
+            <p class="text-muted mb-4">Please provide your personal details. Fields marked with * are required.</p>
+                            
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="full_name" name="full_name" 
+                               placeholder="Enter your full name" 
+                               value="{{ resume.full_name|default:'' }}" required
+                               oninput="document.getElementById('full_name_display').textContent = this.value || 'Your Name'">
+                        <label for="full_name">Full Name *</label>
+                        <div class="invalid-feedback">
+                            Please enter your full name.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="job_title" name="job_title" 
+                               placeholder="e.g. Software Engineer" 
+                               value="{{ resume.job_title|default:'' }}" 
+                               oninput="document.getElementById('job_title_display').textContent = this.value || 'Professional Title'">
+                        <label for="job_title">Professional Title</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control" id="email" name="email" 
+                               placeholder="Enter your email" 
+                               value="{{ resume.email|default:'' }}" required>
+                        <label for="email">Email address *</label>
+                        <div class="invalid-feedback">
+                            Please enter a valid email address.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="tel" class="form-control" id="phone" name="phone" 
+                               placeholder="Enter your phone number"
+                               value="{{ resume.phone|default:'' }}" required>
+                        <label for="phone">Phone Number *</label>
+                        <div class="invalid-feedback">
+                            Please enter your phone number.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="location" name="location" 
+                               placeholder="Enter your location"
+                               value="{{ resume.location|default:'' }}">
+                        <label for="location">Location (City, Country)</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating mb-3">
+                        <input type="url" class="form-control" id="linkedin" name="linkedin" 
+                               placeholder="LinkedIn Profile"
+                               value="{{ resume.linkedin|default:'' }}">
+                        <label for="linkedin">LinkedIn Profile (optional)</label>
+                    </div>
+                </div>
+                                </div>
+                            </div>
+                        </div>
+
+        <!-- Professional Summary Section -->
+        <div class="section">
+            <h3 class="section-title">
+                <i class="fas fa-file-signature me-2"></i>Professional Summary
+            </h3>
+            <p class="text-muted mb-4">Write a compelling summary that highlights your experience, skills, and career goals. Keep it concise and impactful (3-5 sentences).</p>
+            
+            <div class="form-group">
+                <div class="position-relative">
+                    <textarea class="form-control" id="summary" name="summary" 
+                              placeholder="Example: Results-driven professional with 5+ years of experience in [Your Field]. Skilled in [Key Skills] with a proven track record of [Key Achievement]. Committed to [Your Professional Goal]." 
+                              style="min-height: 120px;"
+                              oninput="updateCharacterCount('summary', 'summary-count')">{{ resume.summary|default:'' }}</textarea>
+                    <div class="d-flex justify-content-between mt-2">
+                        <div class="form-text">
+                            <small class="text-muted" id="summary-count">0/500 characters</small>
+                        </div>
+                        <div class="form-text">
+                            <small class="text-muted">
+                                <i class="fas fa-lightbulb me-1"></i>
+                                <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" 
+                                   title="Use action verbs, highlight achievements, and keep it concise.">
+                                    Writing Tips
+                                </a>
+                            </small>
+                        </div>
+                    </div>
+                    <div class="invalid-feedback">
+                        Please provide a professional summary (at least 50 characters).
+                    </div>
+                </div>
+                
+                <!-- Summary Tips (Collapsible) -->
+                <div class="mt-3">
+                    <a class="btn btn-sm btn-outline-secondary d-md-none" data-bs-toggle="collapse" href="#summaryTips" role="button" aria-expanded="false" aria-controls="summaryTips">
+                        <i class="fas fa-lightbulb me-1"></i> Show Writing Tips
+                    </a>
+                    <div class="collapse d-md-block" id="summaryTips">
+                        <div class="card card-body bg-light mt-2">
+                            <h6 class="text-primary mb-2"><i class="fas fa-tip me-1"></i> How to write an effective summary:</h6>
+                            <ul class="mb-0">
+                                <li>Start with your professional title and years of experience</li>
+                                <li>Mention your key skills and areas of expertise</li>
+                                <li>Highlight 1-2 major achievements or strengths</li>
+                                <li>Keep it between 3-5 concise sentences</li>
+                                <li>Use strong action verbs (e.g., developed, led, implemented)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Work Experience Section -->
+        <div class="section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="section-title mb-0">
+                    <i class="fas fa-briefcase me-2"></i>Work Experience
+                </h3>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="add-experience">
+                    <i class="fas fa-plus me-1"></i> Add Experience
+                </button>
+            </div>
+            <p class="text-muted mb-4">List your work experience in reverse chronological order (most recent first). Include your job title, company, dates, and key responsibilities.</p>
+            
+            <div id="work-experience-container">
+                <!-- Work experience entries will be added here dynamically -->
+                <div class="work-experience-entry card mb-4 border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title mb-0">
+                                <input type="text" class="form-control form-control-lg fw-bold border-0 p-0 mb-1" 
+                                       name="job_title[]" placeholder="Job Title (e.g., Senior Developer)" required>
+                            </h5>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><button class="dropdown-item remove-experience" type="button">
+                                        <i class="fas fa-trash me-2 text-danger"></i>Remove
+                                    </button></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fas fa-building text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control" name="company[]" 
+                                           placeholder="Company Name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fas fa-map-marker-alt text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control" name="location[]" 
+                                           placeholder="Location (e.g., New York, NY)">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="far fa-calendar-alt text-muted"></i>
+                                    </span>
+                                    <input type="month" class="form-control" name="start_date[]" required>
+                                    <span class="input-group-text bg-transparent border-start-0 border-end-0">to</span>
+                                    <input type="month" class="form-control" name="end_date[]" 
+                                           placeholder="Present">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch d-flex align-items-center h-100">
+                                    <input class="form-check-input me-2" type="checkbox" role="switch" 
+                                           id="currentJob" name="current_job[]">
+                                    <label class="form-check-label text-muted" for="currentJob">
+                                        I currently work here
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Job Description</label>
+                            <div class="position-relative">
+                                <textarea class="form-control" name="job_description[]" rows="3" 
+                                          placeholder="• Led a team of 5 developers to deliver projects on time...
+• Increased system performance by 30% through optimization...
+• Collaborated with cross-functional teams to design new features..."></textarea>
+                                <div class="form-text">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Use bullet points (•) to list your responsibilities and achievements
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="achievements-container mb-3">
+                            <label class="form-label fw-medium d-flex justify-content-between align-items-center">
+                                <span>Key Achievements</span>
+                                <button type="button" class="btn btn-sm btn-outline-success btn-sm add-achievement">
+                                    <i class="fas fa-plus me-1"></i> Add Achievement
+                                </button>
+                            </label>
+                            <div class="achievement-list">
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-trophy text-warning"></i>
+                                    </span>
+                                    <input type="text" class="form-control" name="achievements[0][]" 
+                                           placeholder="Achievement (e.g., Employee of the Year 2022)">
+                                    <button class="btn btn-outline-danger remove-achievement" type="button">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-2">
+                <button type="button" class="btn btn-outline-primary" id="add-experience-bottom">
+                    <i class="fas fa-plus me-1"></i> Add Another Position
+                </button>
+            </div>
+        </div>
+
+        <!-- Education Section -->
+        <div class="section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="section-title mb-0">
+                    <i class="fas fa-graduation-cap me-2"></i>Education
+                </h3>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="add-education">
+                    <i class="fas fa-plus me-1"></i> Add Education
+                </button>
+            </div>
+            <p class="text-muted mb-4">List your educational qualifications in reverse chronological order. Include your degree, institution, and relevant details.</p>
+            
+            <div id="education-container">
+                <!-- Education entries will be added here dynamically -->
+                <div class="education-entry card mb-4 border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h5 class="card-title mb-0">
+                                <input type="text" class="form-control form-control-lg fw-bold border-0 p-0 mb-1" 
+                                       name="degree[]" placeholder="Degree (e.g., B.Tech in Computer Science)" required>
+                            </h5>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><button class="dropdown-item remove-education" type="button">
+                                        <i class="fas fa-trash me-2 text-danger"></i>Remove
+                                    </button></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fas fa-university text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control" name="institution[]" 
+                                           placeholder="Institution Name (e.g., University of Delhi)" required>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fas fa-map-marker-alt text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control" name="location[]" 
+                                           placeholder="Location">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="far fa-calendar-alt text-muted"></i>
+                                    </span>
+                                    <input type="month" class="form-control" name="edu_start_date[]" required>
+                                    <span class="input-group-text bg-transparent border-start-0 border-end-0">to</span>
+                                    <input type="month" class="form-control" name="edu_end_date[]" 
+                                           placeholder="Present">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check form-switch d-flex align-items-center h-100">
+                                    <input class="form-check-input me-2" type="checkbox" role="switch" 
+                                           id="currentlyStudying" name="currently_studying[]">
+                                    <label class="form-check-label text-muted" for="currentlyStudying">
+                                        Currently studying here
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-medium">Additional Information</label>
+                            <div class="position-relative">
+                                <textarea class="form-control" name="edu_description[]" rows="2" 
+                                          placeholder="• Relevant coursework "></textarea>
+                                <div class="form-text">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Include relevant coursework, achievements, GPA (if notable), and extracurricular activities
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="achievements-container">
+                            <label class="form-label fw-medium d-flex justify-content-between align-items-center">
+                                <span>Academic Achievements</span>
+                                <button type="button" class="btn btn-sm btn-outline-success btn-sm add-education-achievement">
+                                    <i class="fas fa-plus me-1"></i> Add Achievement
+                                </button>
+                            </label>
+                            <div class="achievement-list">
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text bg-light border-0">
+                                        <i class="fas fa-award text-warning"></i>
+                                    </span>
+                                    <input type="text" class="form-control" name="edu_achievements[0][]" 
+                                           placeholder="Achievement (e.g., Graduated with Honors, 9.5/10 GPA)">
+                                    <button class="btn btn-outline-danger remove-achievement" type="button">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-2">
+                <button type="button" class="btn btn-outline-primary" id="add-education-bottom">
+                    <i class="fas fa-plus me-1"></i> Add Another Education
+                </button>
+            </div>
+        </div>
+
+                        <!-- Skills & Certifications Section -->
+                        <div class="section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="section-title mb-0">
+                    <i class="fas fa-tools me-2"></i>Skills & Certifications
+                </h3>
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline-primary me-2" id="add-skill">
+                        <i class="fas fa-plus me-1"></i> Add Skill
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="add-certification">
+                        <i class="fas fa-plus me-1"></i> Add Certification
+                    </button>
+                </div>
+            </div>
+            <p class="text-muted mb-4">Highlight your key skills and professional certifications to showcase your expertise.</p>
+            
+            <!-- Skills Section -->
+            <div class="mb-5">
+                <h5 class="d-flex align-items-center text-primary mb-3">
+                    <i class="fas fa-code me-2"></i>Technical & Professional Skills
+                    <span class="badge bg-primary-soft ms-2" id="skill-count">0</span>
+                </h5>
+                
+                <div id="skills-container" class="row g-3 mb-3">
+                    <!-- Skill entries will be added here dynamically -->
+                    <div class="col-md-6">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <input type="text" class="form-control form-control-lg fw-bold border-0 p-0 mb-2" 
+                                           name="skill_name[]" placeholder="Skill (e.g., JavaScript, Project Management)" required>
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-skill ms-2">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label d-flex justify-content-between">
+                                        <span>Proficiency Level</span>
+                                        <span class="text-muted small" id="skill-level-text">Intermediate</span>
+                                    </label>
+                                    <input type="range" class="form-range" name="skill_level[]" min="1" max="5" value="3" 
+                                           oninput="document.getElementById('skill-level-text').textContent = 
+                                           ['Beginner', 'Basic', 'Intermediate', 'Advanced', 'Expert'][this.value-1] || 'Intermediate'">
+                                    <div class="d-flex justify-content-between text-muted small">
+                                        <span>Beginner</span>
+                                        <span>Expert</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-2">
+                                    <label class="form-label">Category</label>
+                                    <select class="form-select" name="skill_category[]">
+                                        <option value="">Select Category</option>
+                                        <option value="Programming Languages">Programming Languages</option>
+                                        <option value="Frameworks & Libraries">Frameworks & Libraries</option>
+                                        <option value="Tools & Technologies">Tools & Technologies</option>
+                                        <option value="Design & Creative">Design & Creative</option>
+                                        <option value="Business & Management">Business & Management</option>
+                                        <option value="Languages">Languages</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-text">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Be specific about your skills 
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button type="button" class="btn btn-link" id="add-skill-bottom">
+                        <i class="fas fa-plus me-1"></i> Add Another Skill
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Certifications Section -->
+            <div class="mt-5">
+                <h5 class="d-flex align-items-center text-primary mb-3">
+                    <i class="fas fa-certificate me-2"></i>Certifications & Licenses
+                    <span class="badge bg-primary-soft ms-2" id="cert-count">0</span>
+                </h5>
+                
+                <div id="certifications-container">
+                    <!-- Certification entries will be added here dynamically -->
+                    <div class="certification-entry card mb-4 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h6 class="card-title mb-0">
+                                    <input type="text" class="form-control fw-bold border-0 p-0 mb-1" 
+                                           name="certification_name[]" placeholder="Certification Name (e.g., AWS Certified Solutions Architect)">
+                                </h6>
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-certification">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-7">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-transparent border-end-0">
+                                            <i class="fas fa-building text-muted"></i>
+                                        </span>
+                                        <input type="text" class="form-control" name="issuing_organization[]" 
+                                               placeholder="Issuing Organization (e.g., Amazon Web Services)">
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-transparent border-end-0">
+                                            <i class="far fa-calendar-alt text-muted"></i>
+                                        </span>
+                                        <input type="month" class="form-control" name="cert_issue_date[]" 
+                                               placeholder="Issue Date">
+                                        <span class="input-group-text bg-transparent border-start-0 border-end-0">
+                                            <i class="fas fa-arrow-right text-muted"></i>
+                                        </span>
+                                        <input type="month" class="form-control" name="cert_expiry_date[]" 
+                                               placeholder="Expiry">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-transparent border-end-0">
+                                            <i class="fas fa-id-card text-muted"></i>
+                                        </span>
+                                        <input type="text" class="form-control" name="cert_credential_id[]" 
+                                               placeholder="Credential ID (if any)">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check form-switch d-flex align-items-center h-100">
+                                        <input class="form-check-input me-2" type="checkbox" role="switch" 
+                                               id="doesNotExpire" name="cert_does_not_expire[]">
+                                        <label class="form-check-label text-muted" for="doesNotExpire">
+                                            Does not expire
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-2">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" name="cert_description[]" rows="2" 
+                                          placeholder="• Key skills or technologies covered in this certification
+• Any notable achievements or projects"></textarea>
+                                <div class="form-text">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Add relevant details about what you learned or achieved
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <label class="form-label d-flex align-items-center">
+                                    <i class="fas fa-link me-2"></i>Verification URL (optional)
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fas fa-globe text-muted"></i>
+                                    </span>
+                                    <input type="url" class="form-control" name="cert_url[]" 
+                                           placeholder="https://example.com/certificate/123">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-3">
+                    <button type="button" class="btn btn-link" id="add-certification-bottom">
+                        <i class="fas fa-plus me-1"></i> Add Another Certification
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information Section -->
+        <div class="section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="section-title mb-0">
+                    <i class="fas fa-info-circle me-2"></i>Additional Information
+                </h3>
+                <div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="add-language">
+                        <i class="fas fa-plus me-1"></i> Add Language
+                    </button>
+                    <button type="button" class="btn btn-success btn-lg px-5 py-3" id="downloadPdfBtn" onclick="generatePDF()">
+                        <i class="fas fa-file-pdf me-2"></i>Download PDF
+                    </button>
+                </div>
+            </div>
+            <p class="text-muted mb-4">Add any additional information that highlights your qualifications and personality.</p>
+            
+            <div class="row">
+                <!-- Languages Column -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title d-flex align-items-center text-primary">
+                                <i class="fas fa-language me-2"></i>Languages
+                                <span class="badge bg-primary-soft ms-2" id="language-count">0</span>
+                            </h5>
+                            
+                            <div id="languages-container" class="mb-3">
+                                <!-- Language entries will be added here dynamically -->
+                                <div class="language-entry mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-grow-1 me-2">
+                                            <input type="text" class="form-control mb-2" name="language[]" 
+                                                   placeholder="Language (e.g., Spanish)" required>
+                                            <div class="d-flex align-items-center">
+                                                <span class="me-2 small text-muted">Proficiency:</span>
+                                                <div class="btn-group btn-group-sm w-100" role="group">
+                                                    <input type="radio" class="btn-check" name="language_level[0]" id="lang1-native" value="Native" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="lang1-native">Native</label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="language_level[0]" id="lang1-fluent" value="Fluent" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="lang1-fluent">Fluent</label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="language_level[0]" id="lang1-intermediate" value="Intermediate" autocomplete="off" checked>
+                                                    <label class="btn btn-outline-primary" for="lang1-intermediate">Intermediate</label>
+                                                    
+                                                    <input type="radio" class="btn-check" name="language_level[0]" id="lang1-basic" value="Basic" autocomplete="off">
+                                                    <label class="btn btn-outline-primary" for="lang1-basic">Basic</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-sm btn-outline-danger ms-2 remove-language">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center">
+                                <button type="button" class="btn btn-link btn-sm" id="add-language-bottom">
+                                    <i class="fas fa-plus me-1"></i> Add Another Language
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                </div>
+                
+                <!-- Social & Contact Column -->
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title d-flex align-items-center text-primary">
+                                <i class="fas fa-share-alt me-2"></i>Online Presence
+                            </h5>
+                            <p class="text-muted small mb-3">Add links to your professional profiles and websites.</p>
+                            
+                            <div class="vstack gap-3">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fab fa-linkedin text-muted"></i>
+                                    </span>
+                                    <input type="url" class="form-control" name="linkedin" 
+                                           value="{{ resume.linkedin|default:'' }}" 
+                                           placeholder="LinkedIn Profile URL">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fab fa-github text-muted"></i>
+                                    </span>
+                                    <input type="url" class="form-control" name="github" 
+                                           value="{{ resume.github|default:'' }}" 
+                                           placeholder="GitHub Profile URL">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fab fa-twitter text-muted"></i>
+                                    </span>
+                                    <input type="url" class="form-control" name="twitter" 
+                                           value="{{ resume.twitter|default:'' }}" 
+                                           placeholder="Twitter Profile URL">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fas fa-globe text-muted"></i>
+                                    </span>
+                                    <input type="url" class="form-control" name="website" 
+                                           value="{{ resume.website|default:'' }}" 
+                                           placeholder="Personal Website or Portfolio">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fab fa-stack-overflow text-muted"></i>
+                                    </span>
+                                    <input type="url" class="form-control" name="stack_overflow" 
+                                           value="{{ resume.stack_overflow|default:'' }}" 
+                                           placeholder="Stack Overflow Profile">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent border-end-0">
+                                        <i class="fab fa-medium text-muted"></i>
+                                    </span>
+                                    <input type="url" class="form-control" name="blog" 
+                                           value="{{ resume.blog|default:'' }}" 
+                                           placeholder="Blog or Publications">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                </div>
+            </div>
+        </div>
+                        
+                        <!-- Hidden Print Button (Shown after save) -->
+                        <div id="printSection" class="text-center mt-4" style="display: none;">
+                            <hr>
+                            <h4>Your resume has been saved!</h4>
+                            <button type="button" class="btn btn-primary" onclick="printResume()">
+                                <i class="fas fa-print me-2"></i> Print/Download Resume
+                            </button>
+                            <button type="button" class="btn btn-outline-primary ms-2" id="createNewResume">
+                                <i class="fas fa-plus me-2"></i> Create New Resume
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<!-- JavaScript for form functionality -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" 
+        integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" 
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+// Utility Functions
+function initializeTooltips() {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+}
+
+// Form Functions
+function updateCharacterCount(textareaId, counterId) {
+    const textarea = document.getElementById(textareaId);
+    const counter = document.getElementById(counterId);
+    if (textarea && counter) {
+        counter.textContent = textarea.value.length + ' / 500';
+    }
+}
+
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('profile-preview');
+            if (preview) {
+                preview.src = e.target.result;
+            }
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Dynamic Fields Management
+function addDynamicField(containerId, entryHtml, addButtonId, removeButtonClass) {
+    const container = document.getElementById(containerId);
+    const addButton = document.getElementById(addButtonId);
+    
+    if (!addButton) return;
+    
+    addButton.addEventListener('click', function() {
+        const newEntry = document.createElement('div');
+        newEntry.className = entryHtml.className;
+        newEntry.innerHTML = entryHtml.innerHTML;
+        container.appendChild(newEntry);
+        
+        // Add event listener to the new remove button
+        const removeBtn = newEntry.querySelector('.' + removeButtonClass);
+        if (removeBtn) {
+            removeBtn.addEventListener('click', function() {
+                newEntry.remove();
+            });
+        }
+    });
+    
+    // Add event listeners to existing remove buttons
+    document.querySelectorAll('.' + removeButtonClass).forEach(btn => {
+        btn.addEventListener('click', function() {
+            this.closest('.' + removeButtonClass.split(' ')[0]).remove();
+        });
+    });
+}
+
+// Form Actions
+function clearForm() {
+    if (confirm('Are you sure you want to clear all fields? This cannot be undone.')) {
+        document.querySelector('form').reset();
+        // Clear any dynamically added fields
+        document.querySelectorAll('.dynamic-field').forEach(field => field.remove());
+    }
+}
+
+function saveAsDraft() {
+    // You can implement draft saving logic here
+    alert('Draft saved successfully!');
+}
+
+function previewResume() {
+    // For now, just show a preview alert
+    alert('Preview functionality will be implemented soon!');
+    // In the future, you can implement a modal preview
+}
+
+function showPrintSection() {
+    const printSection = document.getElementById('printSection');
+    if (printSection) {
+        printSection.style.display = 'block';
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+}
+
+function printResume() {
+    const printWindow = window.open('', '_blank');
+    const content = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>My Resume</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+            <style>
+                body { padding: 20px; font-family: Arial, sans-serif; }
+                .resume-header { text-align: center; margin-bottom: 30px; }
+                .section { margin-bottom: 25px; }
+                .section-title { 
+                    border-bottom: 2px solid #0d6efd; 
+                    padding-bottom: 5px; 
+                    margin-bottom: 15px;
+                    color: #0d6efd;
+                }
+                .job-item, .education-item { margin-bottom: 15px; }
+                .date { color: #666; font-style: italic; }
+                @media print {
+                    .no-print { display: none !important; }
+                    body { -webkit-print-color-adjust: exact; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="resume-header">
+                    <h1>${document.getElementById('full_name')?.value || 'Your Name'}</h1>
+                    <p>${document.getElementById('email')?.value || 'your.email@example.com'} | 
+                       ${document.getElementById('phone')?.value || 'Your Phone'}</p>
+                </div>
+                
+                <div class="section">
+                    <h3 class="section-title">Professional Summary</h3>
+                    <p>${document.getElementById('summary')?.value || 'Your professional summary goes here.'}</p>
+                </div>
+                
+                <div class="section">
+                    <h3 class="section-title">Work Experience</h3>
+                    <!-- Work experience will be dynamically added here -->
+                </div>
+                
+                <div class="section">
+                    <h3 class="section-title">Education</h3>
+                    <!-- Education will be dynamically added here -->
+                </div>
+                
+                <div class="section">
+                    <h3 class="section-title">Skills</h3>
+                    <p>${document.getElementById('technical_skills')?.value || 'Your skills will appear here.'}</p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4 no-print">
+                <button onclick="window.print()" class="btn btn-primary">
+                    <i class="fas fa-print me-2"></i>Print Resume
+                </button>
+                <button onclick="window.close()" class="btn btn-secondary ms-2">
+                    <i class="fas fa-times me-2"></i>Close
+                </button>
+            </div>
+        </body>
+        </html>
+    `;
+    
+    printWindow.document.open();
+    printWindow.document.write(content);
+    printWindow.document.close();
+}
+
+
+
+// Initialize when document is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize tooltips
+    initializeTooltips();
+    
+    // Add event listener for Create New Resume button
+    const createNewResumeBtn = document.getElementById('createNewResume');
+    if (createNewResumeBtn) {
+        createNewResumeBtn.addEventListener('click', function() {
+            window.location.href = '{% url "resume:builder" %}';
+        });
+    }
+    
+    // Check if we should show print section (after form submission)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('saved') === 'true') {
+        showPrintSection();
+    }
+    
+    // Initialize character counter for summary
+    const summaryTextarea = document.getElementById('summary');
+    const charCount = document.getElementById('charCount');
+    
+    if (summaryTextarea && charCount) {
+        updateCharacterCount('summary', 'charCount');
+        summaryTextarea.addEventListener('input', function() {
+            updateCharacterCount('summary', 'charCount');
+        });
+    }
+    
+    // Initialize date pickers
+    const dateInputs = document.querySelectorAll('.datepicker');
+    if (window.Datepicker) {
+        dateInputs.forEach(function(input) {
+            new Datepicker(input, {
+                format: 'yyyy-mm-dd',
+                autohide: true
+            });
+        });
+    }
+
+    // Initialize dynamic fields
+    const fieldConfigs = [
+        { type: 'work-experience', container: 'work-experience-container', addBtn: 'add-experience', removeClass: 'remove-experience' },
+        { type: 'education', container: 'education-container', addBtn: 'add-education', removeClass: 'remove-education' },
+        { type: 'certification', container: 'certifications-container', addBtn: 'add-certification', removeClass: 'remove-certification' },
+        { type: 'language', container: 'languages-container', addBtn: 'add-language', removeClass: 'remove-language' }
+    ];
+
+    fieldConfigs.forEach(config => {
+        const entry = document.querySelector(`.${config.type}-entry`);
+        if (entry) {
+            addDynamicField(
+                config.container,
+                entry,
+                config.addBtn,
+                config.removeClass
+            );
+        }
+    });
+});
+</script>
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+    
+    .form-control, .input-group-text, .form-select {
+        border-radius: 5px;
+        transition: all 0.2s;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    }
+    
+    .btn {
+        border-radius: 5px;
+        padding: 8px 20px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+    
+    .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+    }
+    
+    .btn-outline-primary {
+        color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: white;
+    }
+    
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    .step {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .progress {
+        height: 10px;
+        border-radius: 5px;
+    }
+    
+    .form-floating > label {
+        padding: 1rem 0.75rem;
+    }
+    
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label,
+    .form-floating > .form-select ~ label {
+        transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+    }
+    
+    .invalid-feedback {
+        display: none;
+        width: 100%;
+        margin-top: 0.25rem;
+        font-size: 0.875em;
+        color: #dc3545;
+    }
+    
+    .is-invalid ~ .invalid-feedback,
+    .is-invalid ~ .invalid-tooltip,
+    .was-validated :invalid ~ .invalid-feedback,
+    .was-validated :invalid ~ .invalid-tooltip {
+        display: block;
+    }
+    
+    .is-invalid, .was-validated .form-control:invalid, .form-control.is-invalid {
+        border-color: #dc3545;
+        padding-right: calc(1.5em + 0.75rem);
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+</style>
+{% endblock %}

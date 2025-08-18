@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bulk Upload ID Cards{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3>Bulk Upload ID Cards</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5>Instructions:</h5>
+                        <ol>
+                            <li>Prepare an Excel file (.xlsx) with the following columns:
+                                <ul>
+                                    <li><strong>Required columns:</strong> Username, First Name, Last Name, Email, Student ID</li>
+                                    <li><strong>Optional columns:</strong> College, Course, Year, Contact Number, Address, DOB</li>
+                                </ul>
+                            </li>
+                            <li>For any missing optional columns, you can provide default values below.</li>
+                            <li>For DOB column, use date format (YYYY-MM-DD).</li>
+                            <li>Users will be created automatically if they don't exist.</li>
+                            <li>Rows with existing usernames that already have ID cards will be skipped.</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5>Sample Excel Format:</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Email</th>
+                                        <th>Student ID</th>
+                                        <th>College</th>
+                                        <th>Course</th>
+                                        <th>Year</th>
+                                        <th>Contact Number</th>
+                                        <th>Address</th>
+                                        <th>DOB</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>student1</td>
+                                        <td>John</td>
+                                        <td>Doe</td>
+                                        <td>john@example.com</td>
+                                        <td>STU001</td>
+                                        <td>ABC College</td>
+                                        <td>BCA</td>
+                                        <td>2023</td>
+                                        <td>9876543210</td>
+                                        <td>Delhi, India</td>
+                                        <td>2000-01-15</td>
+                                    </tr>
+                                    <tr>
+                                        <td>student2</td>
+                                        <td>Jane</td>
+                                        <td>Smith</td>
+                                        <td>jane@example.com</td>
+                                        <td>STU002</td>
+                                        <td>XYZ College</td>
+                                        <td>BTech</td>
+                                        <td>2022</td>
+                                        <td>8765432109</td>
+                                        <td>Mumbai, India</td>
+                                        <td>2001-05-20</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{% static 'samples/sample_id_cards.xlsx' %}" class="btn btn-outline-primary btn-sm" download>
+                                <i class="fas fa-download"></i> Download Sample Excel
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <form method="post" enctype="multipart/form-data" class="mt-4">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_excel_file" class="form-label">{{ form.excel_file.label }}</label>
+                            {{ form.excel_file }}
+                            <div class="form-text">{{ form.excel_file.help_text }}</div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="id_default_college" class="form-label">{{ form.default_college.label }}</label>
+                                {{ form.default_college }}
+                                <div class="form-text">{{ form.default_college.help_text }}</div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="id_default_course" class="form-label">{{ form.default_course.label }}</label>
+                                {{ form.default_course }}
+                                <div class="form-text">{{ form.default_course.help_text }}</div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-3">
+                                <label for="id_default_year" class="form-label">{{ form.default_year.label }}</label>
+                                {{ form.default_year }}
+                                <div class="form-text">{{ form.default_year.help_text }}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_expiry_date" class="form-label">{{ form.expiry_date.label }}</label>
+                            {{ form.expiry_date }}
+                            <div class="form-text">{{ form.expiry_date.help_text }}</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'id_card_view' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload"></i> Upload and Process
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

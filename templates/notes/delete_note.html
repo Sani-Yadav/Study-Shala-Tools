@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Note - StudyShala{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Delete Note
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h5><i class="fas fa-warning me-2"></i>Are you sure?</h5>
+                        <p class="mb-0">You are about to delete the note "<strong>{{ note.title }}</strong>". This action cannot be undone.</p>
+                    </div>
+
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6><i class="fas fa-file-alt me-2"></i>Note Details:</h6>
+                            <p><strong>Title:</strong> {{ note.title }}</p>
+                            <p><strong>Subject:</strong> {{ note.subject }}</p>
+                            <p><strong>Level:</strong> {{ note.get_level_display }}</p>
+                            <p><strong>Uploaded:</strong> {{ note.uploaded_at|date:"F j, Y" }}</p>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="fas fa-trash me-2"></i>Yes, Delete Note
+                            </button>
+                            <a href="{% url 'notes:my_notes' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

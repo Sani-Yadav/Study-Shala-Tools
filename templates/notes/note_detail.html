@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ note.title }} - StudyShala{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-file-alt me-2"></i>{{ note.title }}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong><i class="fas fa-book me-2"></i>Subject:</strong>
+                            <span class="badge bg-secondary">{{ note.subject }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong><i class="fas fa-graduation-cap me-2"></i>Level:</strong>
+                            <span class="badge bg-info">{{ note.get_level_display }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong><i class="fas fa-user me-2"></i>Uploaded by:</strong>
+                            <span>{{ note.uploaded_by.username }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong><i class="fas fa-calendar me-2"></i>Uploaded on:</strong>
+                            <span>{{ note.uploaded_at|date:"F j, Y" }}</span>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <a href="{{ note.file.url }}" class="btn btn-success btn-lg" target="_blank">
+                            <i class="fas fa-download me-2"></i>Download Note
+                        </a>
+                        
+                        {% if user == note.uploaded_by %}
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'notes:delete_note' note.id %}" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Delete Note
+                            </a>
+                        </div>
+                        {% endif %}
+                        
+                        <a href="{% url 'notes:notes_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Notes
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 4px; font-size: 9px; margin: 0; }
+        .header { text-align: center; margin-bottom: 4px; }
+        .profile-img {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 2px;
+        }
+        .section { margin-top: 4px; margin-bottom: 2px; }
+        .section h2 { font-size: 10px; border-bottom: 1px solid #ccc; padding-bottom: 1px; margin-bottom: 1px; margin-top: 0; }
+        .info-list { list-style: none; padding: 0; margin: 0; }
+        .info-list li { margin-bottom: 1px; }
+        p { margin: 1px 0; }
+        h1 { font-size: 12px; margin: 0; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    {% if resume.profile_image %}
+    <img src="{{ resume.profile_image.url }}" class="profile-img" alt="Profile Image">
+    {% endif %}
+    <h1>{{ resume.full_name }}</h1>
+    <p>{{ resume.email }} | {{ resume.phone }}</p>
+    <p style="font-size:8px;">
+        {% if resume.location %}{{ resume.location }} | {% endif %}
+        {% if resume.linkedin %}LinkedIn: {{ resume.linkedin }} | {% endif %}
+        {% if resume.github %}GitHub: {{ resume.github }} | {% endif %}
+        {% if resume.portfolio_url %}Portfolio: {{ resume.portfolio_url }}{% endif %}
+    </p>
+</div>
+
+<div class="section">
+    <h2>Summary</h2>
+    <p>{{ resume.summary }}</p>
+</div>
+
+<div class="section">
+    <h2>Technical Skills</h2>
+    <p>{{ resume.technical_skills }}</p>
+</div>
+
+<div class="section">
+    <h2>Soft Skills</h2>
+    <p>{{ resume.soft_skills }}</p>
+</div>
+
+<div class="section">
+    <h2>Languages</h2>
+    <p>{{ resume.languages }}</p>
+</div>
+
+<div class="section">
+    <h2>Hobbies</h2>
+    <p>{{ resume.hobbies }}</p>
+</div>
+
+<div class="section">
+    <h2>Education</h2>
+    {% for edu in resume.education_entries.all %}
+        <p><strong>{{ edu.degree }}</strong> at {{ edu.institution }} ({{ edu.year }})<br>Result: {{ edu.result }}</p>
+    {% empty %}
+        <p>No education details.</p>
+    {% endfor %}
+</div>
+
+<div class="section">
+    <h2>Experience</h2>
+    {% for exp in resume.experiences.all %}
+        <p><strong>{{ exp.job_title }}</strong> at {{ exp.company }} ({{ exp.duration }})<br>{{ exp.description }}</p>
+    {% empty %}
+        <p>No experience details.</p>
+    {% endfor %}
+</div>
+
+<div class="section">
+    <h2>Projects</h2>
+    {% for proj in resume.projects.all %}
+        <p><strong>{{ proj.title }}</strong> ({{ proj.tech_stack }})<br>{{ proj.description }}<br>{% if proj.live_url %}Live: {{ proj.live_url }}{% endif %}</p>
+    {% empty %}
+        <p>No projects listed.</p>
+    {% endfor %}
+</div>
+
+<div class="section">
+    <h2>Certifications</h2>
+    {% for cert in resume.certifications.all %}
+        <p><strong>{{ cert.title }}</strong> - {{ cert.platform }} ({{ cert.year }})</p>
+    {% empty %}
+        <p>No certifications listed.</p>
+    {% endfor %}
+</div>
+
+<div class="section">
+    <h2>Achievements</h2>
+    {% for ach in resume.achievements.all %}
+        <p>{{ ach.description }}</p>
+    {% empty %}
+        <p>No achievements listed.</p>
+    {% endfor %}
+</div>
+
+<div class="section">
+    <h2>References</h2>
+    {% for ref in resume.references.all %}
+        <p><strong>{{ ref.name }}</strong> ({{ ref.relationship }})<br>Contact: {{ ref.contact_info }}</p>
+    {% empty %}
+        <p>No references listed.</p>
+    {% endfor %}
+</div>
+
+</body>
+</html>
