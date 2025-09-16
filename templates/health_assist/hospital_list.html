@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hospital List - StudyShala{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 fw-bold mb-3">Hospitals</h1>
+            
+            <!-- Search and Filter -->
+            <div class="card mb-4 border-0 shadow-sm">
+                <div class="card-body p-3">
+                    <form method="get" class="row g-2">
+                        <!-- Search -->
+                        <div class="col-md-4 mb-2">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" class="form-control" id="search" name="search" 
+                                       value="{{ current_search|default:'' }}" placeholder="अस्पताल खोजें...">
+                            </div>
+                        </div>
+
+                        <!-- State -->
+                        <div class="col-md-3 mb-2">
+                            <select class="form-select" id="state" name="state" onchange="this.form.submit()">
+                                <option value="">सभी राज्य</option>
+                                {% for state in states %}
+                                    <option value="{{ state }}" {% if current_state == state %}selected{% endif %}>
+                                        {{ state }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- District -->
+                        <div class="col-md-3 mb-2">
+                            <select class="form-select" id="district" name="district" onchange="this.form.submit()" 
+                                    {% if not current_state %}disabled{% endif %}>
+                                <option value="">सभी जिले</option>
+                                {% for district in districts %}
+                                    <option value="{{ district }}" {% if current_district == district %}selected{% endif %}>
+                                        {{ district }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="col-md-2 d-flex gap-2">
+                            <button type="submit" class="btn btn-primary flex-grow-1">
+                                <i class="fas fa-search me-1"></i> खोजें
+                            </button>
+                            <a href="{% url 'health_assist:hospital_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-undo"></i>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Hospital List -->
+            <div class="row g-4">
+                {% for hospital in hospitals %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                                    <i class="fas fa-hospital text-primary" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">{{ hospital.name }}</h5>
+                                    <p class="text-muted small mb-2">
+                                        <i class="fas fa-map-marker-alt text-muted me-1"></i>
+                                        {{ hospital.district }}, {{ hospital.state }}
+                                    </p>
+                                    {% if hospital.is_24x7 %}
+                                        <span class="badge bg-success bg-opacity-10 text-success mb-2">
+                                            <i class="fas fa-clock me-1"></i> 24/7 Available
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            {% if hospital.phone %}
+                            <div class="d-flex align-items-center mt-3 pt-3 border-top">
+                                <a href="tel:{{ hospital.phone }}" class="text-decoration-none">
+                                    <i class="fas fa-phone-alt text-primary me-2"></i>
+                                    <span class="text-dark fw-medium">{{ hospital.phone }}</span>
+                                </a>
+                                {% if hospital.latitude and hospital.longitude %}
+                                <a href="https://www.google.com/maps?q={{ hospital.latitude }},{{ hospital.longitude }}" 
+                                   target="_blank" 
+                                   class="btn btn-sm btn-outline-primary ms-auto">
+                                    <i class="fas fa-directions me-1"></i> Directions
+                                </a>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12">
+                    <div class="text-center py-5">
+                        <div class="mb-4">
+                            <i class="fas fa-hospital text-muted" style="font-size: 3rem; opacity: 0.3;"></i>
+                        </div>
+                        <h5 class="mb-3">No Hospitals Found</h5>
+                        <p class="text-muted mb-4">No hospitals match your search criteria. Try adjusting your filters.</p>
+                        <a href="{% url 'health_assist:hospital_list' %}" class="btn btn-primary">
+                            <i class="fas fa-undo me-2"></i> Reset Filters
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1{% if current_state %}&state={{ current_state }}{% endif %}{% if current_district %}&district={{ current_district }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}">
+                                &laquo; First
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if current_state %}&state={{ current_state }}{% endif %}{% if current_district %}&district={{ current_district }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}">
+                                Previous
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        </span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if current_state %}&state={{ current_state }}{% endif %}{% if current_district %}&district={{ current_district }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}">
+                                Next
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if current_state %}&state={{ current_state }}{% endif %}{% if current_district %}&district={{ current_district }}{% endif %}{% if current_search %}&search={{ current_search }}{% endif %}">
+                                Last &raquo;
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stateSelect = document.getElementById('state');
+    const districtSelect = document.getElementById('district');
+    
+    // Function to fetch districts for selected state
+    function fetchDistricts(state) {
+        // Clear existing options
+        districtSelect.innerHTML = '<option value="">सभी जिले</option>';
+        
+        if (!state) {
+            districtSelect.disabled = true;
+            return;
+        }
+        
+        // Enable district select
+        districtSelect.disabled = false;
+        
+        // Show loading state
+        const loadingOption = document.createElement('option');
+        loadingOption.text = 'लोड हो रहा है...';
+        loadingOption.disabled = true;
+        districtSelect.appendChild(loadingOption);
+        
+        // Make AJAX call to get districts
+        fetch(`/api/districts/?state=${encodeURIComponent(state)}`)
+            .then(response => response.json())
+            .then(data => {
+                // Clear loading state
+                districtSelect.innerHTML = '<option value="">सभी जिले</option>';
+                
+                // Add districts to dropdown
+                data.districts.forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district;
+                    option.textContent = district;
+                    districtSelect.appendChild(option);
+                });
+                
+                // If there's a district in the URL, select it
+                const urlParams = new URLSearchParams(window.location.search);
+                const districtParam = urlParams.get('district');
+                if (districtParam) {
+                    districtSelect.value = districtParam;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching districts:', error);
+                districtSelect.innerHTML = '<option value="">त्रुटि: जिले लोड नहीं हो सके</option>';
+            });
+    }
+    
+    // Add event listener for state change
+    if (stateSelect) {
+        stateSelect.addEventListener('change', function() {
+            fetchDistricts(this.value);
+        });
+        
+        // Initialize on page load if a state is selected
+        if (stateSelect.value) {
+            fetchDistricts(stateSelect.value);
+        } else {
+            districtSelect.disabled = true;
+        }
+    }
+    
+    // Auto-submit form when district is selected
+    districtSelect.addEventListener('change', function() {
+        if (this.value) {
+            this.form.submit();
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 Satellite Tracker | Real-time ISS Tracking</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-bg: #f5f6fa;
+            --dark-text: #2c3e50;
+            --light-text: #7f8c8d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), #34495e);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-weight: 300;
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+
+        #map {
+            height: 70vh;
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .info-panel {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .info-panel h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .satellite-selector {
+            margin: 10px 0;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
+            color: var(--dark-text);
+            cursor: pointer;
+        }
+        
+        .form-select:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .info-panel h2 i {
+            color: var(--secondary-color);
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-label {
+            font-weight: 500;
+            color: var(--light-text);
+        }
+
+        .data-value {
+            font-weight: 500;
+            color: var(--dark-text);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            padding: 8px 12px;
+            background: #e8f5e9;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #4caf50;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .last-updated {
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--light-text);
+            margin-top: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid #ddd;
+            color: var(--dark-text);
+        }
+
+        .btn-outline:hover {
+            background: #f5f5f5;
+        }
+
+        .satellite-marker {
+            background: none;
+            border: none;
+        }
+
+        .satellite-icon {
+            font-size: 24px;
+            color: var(--accent-color);
+            filter: drop-shadow(0 0 3px rgba(0,0,0,0.5));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .info-panel {
+                order: -1;
+            }
+            
+            #map {
+                height: 60vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div>
+                <h1>Satellite Tracker</h1>
+                <div class="satellite-selector">
+                    <select id="satellite-select" class="form-select">
+                        {% for sat in satellites %}
+                        <option value="{{ sat.id }}" {% if sat.id == default_satellite %}selected{% endif %}>
+                            {{ sat.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <p class="subtitle">Real-time International Space Station (ISS) Tracking</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <div id="map"></div>
+            
+            <div class="info-panel">
+                <h2><i class="fas fa-info-circle"></i> Satellite Info</h2>
+                
+                <div class="data-row">
+                    <span class="data-label">Name:</span>
+                    <span class="data-value" id="satellite-name">ISS (ZARYA)</span>
+                </div>
+                
+                <div class="data-row">
+                    <span class="data-label">Latitude:</span>
+                    <span class="data-value" id="latitude">0.00°</span>
+                </div>
+                
+                <div class="data-row">
+                    <span class="data-label">Longitude:</span>
+                    <span class="data-value" id="longitude">0.00°</span>
+                </div>
+                
+                <div class="data-row">
+                    <span class="data-label">Altitude:</span>
+                    <span class="data-value" id="altitude">0 km</span>
+                </div>
+                
+                <div class="data-row">
+                    <span class="data-label">Velocity:</span>
+                    <span class="data-value" id="velocity">0 km/s</span>
+                </div>
+                
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span id="status-text">Connected - Tracking in real-time</span>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" id="center-map">
+                        <i class="fas fa-crosshairs"></i> Center Map
+                    </button>
+                    <button class="btn btn-outline" id="fullscreen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+                
+                <p class="last-updated">Last updated: <span id="last-updated">Just now</span></p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p> 2025 Satellite Tracker | Data updates every 5 seconds | Made with </p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialize map with better default view
+        const map = L.map('map', {
+            center: [0, 0],
+            zoom: 2,
+            minZoom: 1,
+            maxZoom: 18,
+            zoomControl: true
+        });
+        
+        // Add tile layer with proper attribution
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19,
+        }).addTo(map);
+
+        // Store current satellite ID
+        let currentSatelliteId = '{{ default_satellite }}';
+        
+        // Satellite selection handler
+        document.getElementById('satellite-select').addEventListener('change', function() {
+            currentSatelliteId = this.value;
+            fetchSatellitePosition();
+        });
+
+        // Create a custom satellite icon
+        var satelliteIcon = L.divIcon({
+            className: 'satellite-marker',
+            html: '<i class="fas fa-satellite satellite-icon"></i>',
+            iconSize: [24, 24],
+            iconAnchor: [12, 12]
+        });
+
+        // Add satellite marker
+        var marker = L.marker([0, 0], {icon: satelliteIcon}).addTo(map);
+        
+        // Add a circle to show the approximate area visible from the satellite
+        var circle = L.circle([0, 0], {
+            color: 'rgba(52, 152, 219, 0.2)',
+            fillColor: 'rgba(52, 152, 219, 0.1)',
+            fillOpacity: 0.3,
+            radius: 2000000 // 2000 km radius (approximate visibility from ISS)
+        }).addTo(map);
+
+        // Function to update the UI with new satellite data
+        function updateSatelliteData(lat, lng, altitude, velocity, satelliteName) {
+            console.log('Updating satellite data:', {lat, lng, altitude, velocity, satelliteName});
+            
+            // Update marker position
+            if (marker) {
+                marker.setLatLng([lat, lng]);
+                circle.setLatLng([lat, lng]);
+                
+                // Update marker popup
+                marker.getPopup()
+                    .setLatLng([lat, lng])
+                    .setContent(`
+                        <div style="text-align: center;">
+                            <strong>${satelliteName || 'Satellite'}</strong><br>
+                            Lat: ${lat.toFixed(2)}°<br>
+                            Lng: ${lng.toFixed(2)}°<br>
+                            Alt: ${altitude.toFixed(2)} km<br>
+                            Vel: ${velocity.toFixed(2)} km/s
+                        </div>
+                    `);
+            }
+            
+            // Update info panel
+            if (document.getElementById('satellite-name')) {
+                document.getElementById('satellite-name').textContent = satelliteName || 'Satellite';
+                document.getElementById('latitude').textContent = lat.toFixed(2) + '°';
+                document.getElementById('longitude').textContent = lng.toFixed(2) + '°';
+                document.getElementById('altitude').textContent = altitude.toFixed(2) + ' km';
+                document.getElementById('velocity').textContent = velocity.toFixed(2) + ' km/s';
+                
+                // Update last updated time
+                const now = new Date();
+                document.getElementById('last-updated').textContent = now.toLocaleTimeString();
+            }
+            
+            // Update last updated time
+            const now = new Date();
+            document.getElementById('last-updated').textContent = now.toLocaleTimeString();
+            
+            // Update marker popup
+            marker.getPopup()
+                .setLatLng([lat, lng])
+                .setContent(`
+                    <div style="text-align: center;">
+                        <strong>${satelliteName || 'Satellite'}</strong><br>
+                        Lat: ${lat.toFixed(2)}°<br>
+                        Lng: ${lng.toFixed(2)}°<br>
+                        Alt: ${altitude.toFixed(2)} km<br>
+                        Vel: ${velocity.toFixed(2)} km/s
+                    </div>
+                `);
+        }
+
+        // Show error message to user
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            if (errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                setTimeout(() => { errorDiv.style.display = 'none'; }, 5000);
+            }
+            console.error(message);
+        }
+
+        // Convert ECI coordinates to latitude/longitude
+        function xyzToLatLng(x, y, z) {
+            try {
+                const r = Math.sqrt(x*x + y*y + z*z);
+                if (r === 0) {
+                    console.error('Zero vector received');
+                    return [0, 0];
+                }
+                const lat = Math.asin(z / r) * (180 / Math.PI);
+                const lng = Math.atan2(y, x) * (180 / Math.PI);
+                console.log(`Converted [${x}, ${y}, ${z}] to [${lat}, ${lng}]`);
+                return [lat, lng];
+            } catch (e) {
+                console.error('Error in xyzToLatLng:', e);
+                return [0, 0];
+            }
+        }
+
+        // Function to fetch satellite position
+        async function fetchSatellitePosition() {
+            try {
+                console.log(`Fetching position for satellite: ${currentSatelliteId}`);
+                const response = await fetch(`/satellite-tracker/satellite-position/${currentSatelliteId}/`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Received satellite data:', data);
+
+                if (data.error) {
+                    console.error('Error in satellite data:', data.error);
+                    showError(`Error: ${data.error}`);
+                    return;
+                }
+
+                // Get satellite name with simulation indicator if needed
+                let displayName = data.name || 'Satellite';
+                const isSimulated = displayName.includes('(Simulated)') || !data.is_tle;
+                
+                // For ISRO satellites, use direct lat/lng if available
+                if (data.lat !== undefined && data.lng !== undefined) {
+                    const lat = parseFloat(data.lat);
+                    const lng = parseFloat(data.lng);
+                    let altitude = parseFloat(data.altitude) || 0;
+                    let velocity = parseFloat(data.velocity) || 7.66;
+                    
+                    // Special handling for Aditya-L1 at L1 point
+                    if (displayName.includes('Aditya-L1') && data.altitude > 1000000) {
+                        // Show Aditya-L1 at a fixed position near India
+                        const indiaLat = 20.5937;
+                        const indiaLng = 78.9629;
+                        updateSatelliteData(indiaLat, indiaLng, data.altitude, 0, 'Aditya-L1 (L1 Point)');
+                        
+                        // Add a special marker for L1 point
+                        if (!window.adityaMarker) {
+                            window.adityaMarker = L.marker([0, 0], {
+                                icon: L.divIcon({
+                                    html: '<i class="fas fa-satellite-dish" style="color: #e74c3c; font-size: 24px;"></i>',
+                                    className: 'satellite-marker',
+                                    iconSize: [24, 24]
+                                })
+                            }).addTo(map);
+                            
+                            // Add a line from India to Aditya-L1
+                            window.adityaLine = L.polyline(
+                                [[indiaLat, indiaLng], [0, 0]],
+                                {color: '#e74c3c', dashArray: '5, 5'}
+                            ).addTo(map);
+                            
+                            // Add a popup with info about Aditya-L1
+                            window.adityaMarker.bindPopup(
+                                '<b>Aditya-L1</b><br>India\'s first solar mission<br>Located at L1 Lagrange point',
+                                {autoClose: false}
+                            ).openPopup();
+                        }
+                        
+                        // Update the line position
+                        if (window.adityaLine) {
+                            window.adityaLine.setLatLngs([[indiaLat, indiaLng], [0, 0]]);
+                        }
+                        
+                        return;
+                    }
+                    
+                    // For other ISRO satellites with direct coordinates
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        // Update the UI with the satellite data
+                        updateSatelliteData(lat, lng, altitude, velocity, displayName);
+                        
+                        // Auto-center the map on the satellite (if not following)
+                        if (window.autoCenter !== false) {
+                            map.setView([lat, lng], map.getZoom(), {animate: true});
+                        }
+                        
+                        // Add orbit line for ISRO satellites
+                        if (!window.orbitLine && !isSimulated) {
+                            window.orbitLine = L.polyline([], {color: '#3498db', weight: 1}).addTo(map);
+                        }
+                        
+                        // Update orbit line (last 100 positions)
+                        if (window.orbitLine) {
+                            const orbitPoints = window.orbitPoints || [];
+                            orbitPoints.push([lat, lng]);
+                            if (orbitPoints.length > 100) orbitPoints.shift();
+                            window.orbitPoints = orbitPoints;
+                            window.orbitLine.setLatLngs(orbitPoints);
+                        }
+                        
+                        return;
+                    }
+                }
+                
+                // Fallback to ECI conversion for other satellites
+                const latLng = xyzToLatLng(data.x_km, data.y_km, data.z_km);
+                console.log('Converted to lat/lng:', latLng);
+                
+                // Calculate altitude and velocity
+                const altitude = Math.sqrt(data.x_km*data.x_km + data.y_km*data.y_km + data.z_km*data.z_km) - 6371;
+                const velocity = Math.sqrt(data.x_km*data.x_km + data.y_km*data.y_km + data.z_km*data.z_km) * 0.001;
+                
+                // Make sure we have valid data before updating
+                if (!isNaN(latLng[0]) && !isNaN(latLng[1])) {
+                    // Update the UI with new satellite data
+                    updateSatelliteData(latLng[0], latLng[1], altitude, velocity, displayName);
+                    
+                    // Auto-center the map on the satellite (if not following)
+                    if (window.autoCenter !== false) {
+                        map.setView(latLng, map.getZoom(), {animate: true});
+                    }
+                } else {
+                    console.error('Invalid coordinates received:', latLng);
+                    showError('Received invalid coordinates. Trying again...');
+                }
+            } catch (error) {
+                console.error('Error fetching satellite data:', error);
+                showError(`Error: ${error.message}`);
+                
+                // If we have a position but couldn't update it, keep the last known position
+                if (marker.getLatLng()) {
+                    const lastPos = marker.getLatLng();
+                    updateSatelliteData(lastPos.lat, lastPos.lng, 
+                                      document.getElementById('altitude').textContent.split(' ')[0],
+                                      document.getElementById('velocity').textContent.split(' ')[0],
+                                      document.getElementById('satellite-name').textContent + ' (Offline)');
+                }
+            }
+        }
+
+        // Event listeners for controls
+        document.getElementById('center-map').addEventListener('click', function() {
+            const latLng = marker.getLatLng();
+            map.setView(latLng, map.getZoom(), {animate: true});
+            window.autoCenter = true;
+        });
+
+        document.getElementById('fullscreen').addEventListener('click', function() {
+            const elem = document.documentElement;
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        });
+
+        // Disable auto-center when user manually moves the map
+        map.on('dragstart', function() {
+            window.autoCenter = false;
+        });
+
+        // Initial fetch and set up auto-refresh
+        // Update satellite position every 5 seconds
+        setInterval(fetchSatellitePosition, 5000);
+        // Initial fetch
+        fetchSatellitePosition();
+    </script>
+</body>
+</html>

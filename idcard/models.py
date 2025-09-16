@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw
 from django.urls import reverse
 
 class IDCard(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='id_cards')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='id_cards')
     Full_Name = models.CharField(max_length=20, unique=True)
     student_id = models.CharField(max_length=50, unique=True, verbose_name='Student ID', default='', blank=True)
     college = models.CharField(max_length=100, verbose_name='College/School', default='', blank=True)

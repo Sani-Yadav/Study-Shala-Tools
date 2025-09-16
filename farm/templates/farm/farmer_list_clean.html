@@ -1,0 +1,317 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}किसान सूची - किसान सहायता पोर्टल{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #2e7d32;
+        --secondary-color: #388e3c;
+        --accent-color: #8bc34a;
+        --warning-color: #ffa000;
+        --danger-color: #d32f2f;
+        --light-bg: #f1f8e9;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --border-radius: 12px;
+    }
+    
+    body {
+        background-color: #f5f5f5;
+        font-family: 'Hind Siliguri', sans-serif;
+        color: #2e2e2e;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+        color: white;
+        padding: 2.5rem 0;
+        margin: -1.5rem -1.5rem 2.5rem -1.5rem;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .farmer-card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        background: white;
+        border-top: 4px solid var(--primary-color);
+    }
+    
+    .farmer-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(46, 125, 50, 0.15);
+    }
+
+    .crop-cycle {
+        height: 8px;
+        border-radius: 4px;
+        background: #e0e0e0;
+        margin: 10px 0;
+        overflow: hidden;
+    }
+
+    .cycle-progress {
+        height: 100%;
+        background: linear-gradient(90deg, #4caf50, #8bc34a);
+        width: 65%;
+        border-radius: 4px;
+    }
+
+    .weather-card {
+        background: linear-gradient(135deg, #2196f3, #21cbf3);
+        color: white;
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .btn-action {
+        border-radius: 20px;
+        padding: 8px 20px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .btn-primary:hover {
+        background-color: #1b5e20;
+        border-color: #1b5e20;
+    }
+
+    .crop-card {
+        background: #f8f9fa;
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .status-badge {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .status-active {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .status-pending {
+        background-color: #fff8e1;
+        color: #ff8f00;
+    }
+
+    .status-completed {
+        background-color: #e3f2fd;
+        color: #1565c0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Section -->
+    <div class="page-header mb-4">
+        <div class="container text-center">
+            <div class="header-icon">
+                <i class="fas fa-tractor"></i>
+            </div>
+            <h1 class="h2 mb-3">किसान सहायता पोर्टल</h1>
+            <p class="lead mb-0">आपकी खेती, आपकी सफलता - हर कदम पर आपके साथ</p>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                <input type="text" class="form-control" placeholder="किसान का नाम, फोन नंबर या गाँव खोजें...">
+                <button class="btn btn-primary" type="button">
+                    <i class="fas fa-search me-1"></i> खोजें
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add New Farmer Button -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4 mb-0">किसान सूची</h2>
+        <a href="{% url 'farm:add_farmer' %}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i> नया किसान जोड़ें
+        </a>
+    </div>
+
+    <!-- Farmers List -->
+    <div class="row">
+        {% if farmers %}
+            {% for farmer in farmers %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="farmer-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start mb-3">
+                            <img src="https://ui-avatars.com/api/?name={{ farmer.name|urlencode }}&background=4e73df&color=fff&size=100" 
+                                 class="rounded-circle me-3" 
+                                 alt="{{ farmer.name }}"
+                                 width="80"
+                                 height="80">
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h5 class="mb-1">{{ farmer.name }}</h5>
+                                    <span class="badge bg-{{ farmer.is_active|yesno:'success,secondary' }}">
+                                        {{ farmer.is_active|yesno:"सक्रिय,निष्क्रिय" }}
+                                    </span>
+                                </div>
+                                <p class="text-muted mb-1">
+                                    <i class="fas fa-phone-alt me-2"></i> {{ farmer.phone }}
+                                </p>
+                                <p class="text-muted mb-0">
+                                    <i class="fas fa-map-marker-alt me-2"></i> {{ farmer.village }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        {% if farmer.crops.exists %}
+                        <div class="mt-3">
+                            <h6 class="small text-uppercase text-muted mb-2">वर्तमान फसलें</h6>
+                            {% for crop in farmer.crops.all|slice:":2" %}
+                            <div class="crop-card mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>{{ crop.get_crop_type_display }}</span>
+                                    <span class="badge bg-{{ crop.get_status_color }}">
+                                        {{ crop.get_status_display }}
+                                    </span>
+                                </div>
+                                <div class="crop-cycle mt-2">
+                                    <div class="cycle-progress" style="width: {{ crop.progress_percentage }}%;"></div>
+                                </div>
+                                <div class="d-flex justify-content-between small text-muted mt-1">
+                                    <span>{{ crop.planting_date|date:"d/m/Y" }}</span>
+                                    <span>{{ crop.harvest_date|date:"d/m/Y" }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                            {% if farmer.crops.count > 2 %}
+                            <div class="text-center mt-2">
+                                <a href="#" class="text-decoration-none small">
+                                    + {{ farmer.crops.count|add:"-2" }} और फसलें देखें
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="alert alert-light text-center py-2 mb-0 mt-2">
+                            <small class="text-muted">कोई फसल जानकारी उपलब्ध नहीं</small>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-white border-0 d-flex justify-content-between">
+                        <a href="{% url 'farm:farmer_detail' farmer.id %}" class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye me-1"></i> विवरण
+                        </a>
+                        <div class="btn-group">
+                            <a href="tel:{{ farmer.phone }}" class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-phone-alt"></i>
+                            </a>
+                            <a href="https://wa.me/{{ farmer.phone }}" class="btn btn-sm btn-outline-success">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                            <a href="#" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">कोई किसान उपलब्ध नहीं है</h5>
+                <p class="text-muted">कृपया नया किसान जोड़ने के लिए ऊपर दिए गए बटन पर क्लिक करें</p>
+                <a href="{% url 'farm:add_farmer' %}" class="btn btn-primary mt-2">
+                    <i class="fas fa-plus-circle me-2"></i> नया किसान जोड़ें
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&laquo;</span>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% else %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&raquo;</span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
+{% endblock %}

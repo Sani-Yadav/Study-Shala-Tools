@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}किसान जानकारी फॉर्म{% endblock %}
+
+{% block extra_css %}
+<!-- Farm Module CSS -->
+<link rel="stylesheet" href="{% static 'farm/css/farm.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="farm-form">
+    <div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header text-center py-3">
+                    <h3 class="m-0">किसान जानकारी फॉर्म</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h4 class="mb-0">किसान विवरण</h4>
+                    </div>
+                    
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="name" class="form-label">किसान का नाम</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="village" class="form-label">गाँव</label>
+                            <input type="text" class="form-control" id="village" name="village" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">फोन नंबर</label>
+                            <input type="text" class="form-control" id="phone" name="phone" pattern="[0-9]{10}" required>
+                            <div class="form-text">केवल 10 अंकों का नंबर डालें</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="land_area" class="form-label">खेत क्षेत्रफल (एकड़ में)</label>
+                            <input type="number" class="form-control" id="land_area" name="land_area" step="0.01" min="0" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="crop" class="form-label">फसल का नाम</label>
+                            <input type="text" class="form-control" id="crop" name="crop" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="sowing_date" class="form-label">फसल बोने की तारीख</label>
+                            <input type="date" class="form-control" id="sowing_date" name="sowing_date" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>संग्रहीत करें
+                        </button>
+                    </form>
+
+                    <a href="{% url 'farmer_assistant:farmer_list' %}" class="back-link">
+                        <i class="fas fa-arrow-left me-2"></i>किसान सूची पर वापस जाएं
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Farm Module JavaScript -->
+<script src="{% static 'farm/js/farm.js' %}"></script>
+{% endblock %}

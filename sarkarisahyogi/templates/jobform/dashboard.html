@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sarkari Sahyogi - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <img src="{{ profile.photo.url }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;" alt="Profile Photo">
+                    <h4>{{ profile.full_name }}</h4>
+                    <p class="text-muted">{{ profile.address }}</p>
+                    <p>Date of Birth: {{ profile.dob }}</p>
+                    <a href="{% url 'sarkarisahyogi:profile' %}" class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>My Job Applications</h4>
+                    <a href="{% url 'sarkarisahyogi:apply_job' %}" class="btn btn-success">Apply for New Job</a>
+                </div>
+                <div class="card-body">
+                    {% if applications %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Job Title</th>
+                                        <th>Applied On</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for app in applications %}
+                                    <tr>
+                                        <td>{{ app.job_title }}</td>
+                                        <td>{{ app.applied_on|date:"d M Y" }}</td>
+                                        <td>
+                                            <span class="badge {% if app.status == 'Approved' %}bg-success{% elif app.status == 'Rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                                                {{ app.status }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-file-alt fa-4x text-muted mb-3"></i>
+                            <h5>No job applications found</h5>
+                            <p>You haven't applied to any jobs yet.</p>
+                            <a href="{% url 'sarkarisahyogi:apply_job' %}" class="btn btn-primary">Apply for a Job</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

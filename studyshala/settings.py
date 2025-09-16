@@ -7,22 +7,49 @@ SECRET_KEY = 'django-insecure-secret-key'
 DEBUG = True
 ALLOWED_HOSTS = []
 
+# TMDB API Configuration
+TMDB_API_KEY = "3d1cb94d909aab088231f5af899dffdc"
+TMDB_BASE_URL = 'https://api.themoviedb.org/3'
+TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500'
+
 INSTALLED_APPS = [
+    # Django built-in apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    
+    # Third-party apps
     'rest_framework',
     'rest_framework.authtoken',
+    'widget_tweaks',
+    
+    # Local apps with custom AppConfig
+    'employeeid.apps.EmployeeidConfig',
+    'qr_feedback.feedback',  # Updated to use the correct app path
+    'health_assist.apps.HealthAssistConfig',
+    'idcard.apps.IdcardConfig',
+    'qr_attendance.attendance.apps.AttendanceConfig',
+    'resume.apps.ResumeConfig',
+    'scanner.apps.ScannerConfig',
+    
+    # Local apps without custom AppConfig
     'accounts',
     'notes',
-    'scanner',
-    'idcard',
-    'employeeid',
-    'resume'
+    'media_downloader.downloader',
+    
+    # Satellite Tracker app with full path
+    'satellite_tracker.tracker.apps.TrackerConfig',
+    
+    # Farm app (ONLY farm, remove farmer_assistant.farm)
+    'farm.apps.FarmConfig',
+    'social_post',
+    'sarkarisahyogi.jobform.apps.JobformConfig',
+    'political_id.id_card_app.apps.IdCardAppConfig',  # Using full path to AppConfig
+    'ticket_booking.booking.apps.BookingConfig',
+
 ]
 
 MIDDLEWARE = [
@@ -40,7 +67,11 @@ ROOT_URLCONF = 'studyshala.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # global template folder
+        'DIRS': [
+            BASE_DIR / 'templates',  # global template folder
+            os.path.join(BASE_DIR, 'accounts', 'templates'),  # accounts app templates
+            os.path.join(BASE_DIR, 'sarkarisahyogi', 'templates'),  # sarkarisahyogi app templates
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -84,3 +115,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
+# OpenWeatherMap API Configuration
+OPENWEATHER_API_KEY = 'eb5c7e956d137db93d3ce624f523ce37'  # यहां सिर्फ API key लिखें

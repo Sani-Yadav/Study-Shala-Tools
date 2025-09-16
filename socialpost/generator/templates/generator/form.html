@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Social Post Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            display: block;
+            margin: 30px auto 0;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .preview {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .preview h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        #postPreview {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            margin: 0 auto;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Social Post Generator</h1>
+        
+        <form id="postForm" onsubmit="generatePost(event)">
+            <div class="form-group">
+                <label for="topic">Post Topic:</label>
+                <input type="text" id="topic" name="topic" placeholder="Enter post topic" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="caption">Caption (optional):</label>
+                <textarea id="caption" name="caption" placeholder="Enter your caption here..."></textarea>
+            </div>
+            
+            <button type="submit">Generate Post</button>
+        </form>
+        
+        <div class="preview">
+            <h2>Preview</h2>
+            <img id="postPreview" alt="Generated post will appear here">
+            <p id="imageLink" style="display: none; margin-top: 15px;">
+                <a href="#" id="downloadLink" download="social-post.png">Download Image</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function generatePost(event) {
+            event.preventDefault();
+            
+            const topic = document.getElementById('topic').value;
+            const caption = document.getElementById('caption').value;
+            const preview = document.getElementById('postPreview');
+            const imageLink = document.getElementById('imageLink');
+            const downloadLink = document.getElementById('downloadLink');
+            
+            // Create URL with query parameters
+            const url = `/post/?topic=${encodeURIComponent(topic)}&caption=${encodeURIComponent(caption)}`;
+            
+            // Update image source
+            preview.src = url;
+            preview.style.display = 'block';
+            
+            // Update download link
+            downloadLink.href = url;
+            imageLink.style.display = 'block';
+            
+            // Scroll to preview
+            preview.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

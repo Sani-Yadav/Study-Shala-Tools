@@ -1,0 +1,168 @@
+{% extends 'resume/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'resume/css/resume-builder.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12 text-center mb-4">
+            <h1>Resume Preview</h1>
+            <div class="btn-group mt-3">
+                <a href="{% url 'resume:builder' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Editor
+                </a>
+                <button onclick="window.print()" class="btn btn-primary">
+                    <i class="fas fa-print"></i> Print Resume
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="resume-preview">
+        <!-- Header Section -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2>{{ resume_data.full_name }}</h2>
+                {% if resume_data.job_title %}<h4>{{ resume_data.job_title }}</h4>{% endif %}
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="contact-info">
+                    {% if resume_data.email %}
+                    <span><i class="fas fa-envelope"></i> {{ resume_data.email }}</span>
+                    {% endif %}
+                    {% if resume_data.phone %}
+                    <span><i class="fas fa-phone"></i> {{ resume_data.phone }}</span>
+                    {% endif %}
+                    {% if resume_data.linkedin %}
+                    <span><i class="fab fa-linkedin"></i> {{ resume_data.linkedin }}</span>
+                    {% endif %}
+                    {% if resume_data.github %}
+                    <span><i class="fab fa-github"></i> {{ resume_data.github }}</span>
+                    {% endif %}
+                    {% if resume_data.address %}
+                    <span><i class="fas fa-map-marker-alt"></i> {{ resume_data.address }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        {% if resume_data.summary %}
+        <div class="section mb-4">
+            <h3 class="section-title">Summary</h3>
+            <p>{{ resume_data.summary }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Skills -->
+        {% if resume_data.skills %}
+        <div class="section mb-4">
+            <h3 class="section-title">Skills</h3>
+            <div class="skills-container">
+                {% for skill in resume_data.getlist('skills[]') %}
+                    {% if skill %}
+                    <span class="skill-tag">{{ skill }}</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Experience -->
+        {% if resume_data.getlist('exp_company[]') %}
+        <div class="section mb-4">
+            <h3 class="section-title">Work Experience</h3>
+            {% for i in resume_data.getlist('exp_company') %}
+                {% if i %}
+                <div class="experience-item">
+                    <h4>{{ resume_data.getlist('exp_title')|default:''|slice:forloop.counter0|last|default:'' }}</h4>
+                    <h5>{{ i }}</h5>
+                    <p class="text-muted">
+                        {{ resume_data.getlist('exp_start_date')|default:''|slice:forloop.counter0|last|default:'' }}
+                        {% if resume_data.getlist('exp_end_date')|slice:forloop.counter0|last %}
+                            - {{ resume_data.getlist('exp_end_date')|slice:forloop.counter0|last }}
+                        {% else %}
+                            - Present
+                        {% endif %}
+                        {% if resume_data.getlist('exp_location')|slice:forloop.counter0|last %}
+                            | {{ resume_data.getlist('exp_location')|slice:forloop.counter0|last }}
+                        {% endif %}
+                    </p>
+                    {% if resume_data.getlist('exp_description')|slice:forloop.counter0|last %}
+                    <div class="experience-description">
+                        {{ resume_data.getlist('exp_description')|slice:forloop.counter0|last|linebreaksbr }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Education -->
+        {% if resume_data.getlist('edu_institution[]') %}
+        <div class="section mb-4">
+            <h3 class="section-title">Education</h3>
+            {% for i in resume_data.getlist('edu_institution') %}
+                {% if i %}
+                <div class="education-item">
+                    <h4>{{ resume_data.getlist('edu_degree')|default:''|slice:forloop.counter0|last|default:'' }}</h4>
+                    <h5>{{ i }}</h5>
+                    <p class="text-muted">
+                        {{ resume_data.getlist('edu_field')|default:''|slice:forloop.counter0|last|default:'' }}
+                        {% if resume_data.getlist('edu_start_date')|slice:forloop.counter0|last %}
+                            | {{ resume_data.getlist('edu_start_date')|slice:forloop.counter0|last }}
+                            - {{ resume_data.getlist('edu_end_date')|slice:forloop.counter0|last|default:'Present' }}
+                        {% endif %}
+                    </p>
+                    {% if resume_data.getlist('edu_notes')|slice:forloop.counter0|last %}
+                    <div class="education-notes">
+                        {{ resume_data.getlist('edu_notes')|slice:forloop.counter0|last|linebreaksbr }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Projects -->
+        {% if resume_data.getlist('project_name[]') %}
+        <div class="section mb-4">
+            <h3 class="section-title">Projects</h3>
+            {% for i in resume_data.getlist('project_name') %}
+                {% if i %}
+                <div class="project-item">
+                    <h4>{{ i }}</h4>
+                    {% if resume_data.getlist('project_url')|slice:forloop.counter0|last %}
+                    <p class="project-url">
+                        <a href="{{ resume_data.getlist('project_url')|slice:forloop.counter0|last }}" target="_blank">
+                            {{ resume_data.getlist('project_url')|slice:forloop.counter0|last }}
+                        </a>
+                    </p>
+                    {% endif %}
+                    {% if resume_data.getlist('project_technologies')|slice:forloop.counter0|last %}
+                    <p class="project-technologies">
+                        <strong>Technologies:</strong> {{ resume_data.getlist('project_technologies')|slice:forloop.counter0|last }}
+                    </p>
+                    {% endif %}
+                    {% if resume_data.getlist('project_description')|slice:forloop.counter0|last %}
+                    <div class="project-description">
+                        {{ resume_data.getlist('project_description')|slice:forloop.counter0|last|linebreaksbr }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

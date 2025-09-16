@@ -1,0 +1,649 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <!-- Weather Dashboard CSS -->
+    <link rel="stylesheet" href="{% static 'farm/css/weather-dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="weather-dashboard">
+    <header class="weather-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-3"><i class="fas fa-cloud-sun me-2"></i>मौसम डैशबोर्ड</h1>
+                    <p class="lead mb-0">वर्तमान मौसम की स्थिति और पूर्वानुमान</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <div class="location-selector">
+                        <form method="get" class="d-flex">
+                            <input type="text" 
+                                   class="form-control me-2 location-input" 
+                                   name="location" 
+                                   placeholder="स्थान खोजें..."
+                                   value="{{ location|default:'' }}">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                        <div class="location-examples">
+                            उदाहरण: दिल्ली, मुंबई, बैंगलोर
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="weather-main">
+        <div class="container">
+            {% if weather %}
+                <!-- Current Weather Section -->
+                <div class="weather-card current-weather-card">
+                    <div class="weather-card-header">
+                        <h2><i class="fas fa-cloud-sun me-2"></i>वर्तमान मौसम</h2>
+                        <div class="location-info">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>{{ weather.name }}, {{ weather.sys.country }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-card-body">
+                        <div class="current-weather-content">
+                            <div class="weather-icon-temp">
+                                <img src="http://openweathermap.org/img/wn/{{ weather.weather.0.icon }}@4x.png" 
+                                     alt="{{ weather.weather.0.description }}" 
+                                     class="weather-icon">
+                                <div class="temperature">
+                                    <span class="temp-value">{{ weather.main.temp|floatformat:0 }}</span>
+                                    <span class="temp-unit">°C</span>
+                                </div>
+                            </div>
+                            
+                            <div class="weather-details">
+                                <div class="weather-description">
+                                    <h3>{{ weather.weather.0.description|title }}</h3>
+                                    <p>हवा में नमी: {{ weather.main.humidity }}%</p>
+                                </div>
+                                
+                                <div class="weather-stats">
+                                    <div class="weather-stat">
+                                        <i class="fas fa-temperature-high"></i>
+                                        <span>अधिकतम: {{ weather.main.temp_max|floatformat:0 }}°C</span>
+                                    </div>
+                                    <div class="weather-stat">
+                                        <i class="fas fa-temperature-low"></i>
+                                        <span>न्यूनतम: {{ weather.main.temp_min|floatformat:0 }}°C</span>
+                                    </div>
+                                    <div class="weather-stat">
+                                        <i class="fas fa-wind"></i>
+                                        <span>हवा: {{ weather.wind.speed }} m/s</span>
+                                    </div>
+                                    <div class="weather-stat">
+                                        <i class="fas fa-tint"></i>
+                                        <span>दाब: {{ weather.main.pressure }} hPa</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Weather Alerts Section -->
+                {% if active_alerts %}
+                <div class="weather-card alerts-card">
+                    <div class="weather-card-header">
+                        <h2><i class="fas fa-exclamation-triangle me-2"></i>मौसम चेतावनी</h2>
+                    </div>
+                    <div class="weather-card-body">
+                        <div class="alerts-container">
+                            {% for alert in active_alerts %}
+                            <div class="alert-card alert-{{ alert.severity }}">
+                                <div class="alert-header">
+                                    <h4>{{ alert.title }}</h4>
+                                    <span class="badge bg-{{ alert.severity }}">
+                                        {{ alert.get_severity_display }}
+                                    </span>
+                                </div>
+                                <p class="alert-description">{{ alert.description }}</p>
+                                <div class="alert-footer">
+                                    <small>
+                                        <i class="far fa-clock"></i>
+                                        {{ alert.valid_from|date:"d M, h:i A" }} - {{ alert.valid_until|date:"d M, h:i A" }}
+                                    </small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- 5-Day Forecast Section -->
+                <div class="weather-card forecast-card">
+                    <div class="weather-card-header">
+                        <h2><i class="fas fa-calendar-day me-2"></i>5-दिन का पूर्वानुमान</h2>
+                    </div>
+                    <div class="weather-card-body">
+                        <div class="forecast-container">
+                            {% for day in forecast.daily|slice:"1:6" %}
+                            <div class="forecast-day">
+                                <div class="forecast-day-name">
+                                    {{ day.dt|date:"l" }}
+                                </div>
+                                <div class="forecast-icon">
+                                    <img src="http://openweathermap.org/img/wn/{{ day.weather.0.icon }}.png" 
+                                         alt="{{ day.weather.0.description }}">
+                                </div>
+                                <div class="forecast-temp">
+                                    <span class="temp-max">{{ day.temp.max|floatformat:0 }}°</span>
+                                    <span class="temp-min">{{ day.temp.min|floatformat:0 }}°</span>
+                                </div>
+                                <div class="forecast-desc">
+                                    {{ day.weather.0.description|title }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+            {% else %}
+                <div class="weather-card">
+                    <div class="weather-card-body text-center p-5">
+                        <i class="fas fa-cloud-sun fa-4x mb-4 text-muted"></i>
+                        <h3 class="mb-3">मौसम डेटा उपलब्ध नहीं है</h3>
+                        <p class="text-muted">कृपया कोई स्थान खोजें या बाद में पुनः प्रयास करें।</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}
+    
+    .forecast-day {
+        text-align: center;
+        padding: 1rem;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .forecast-day:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .forecast-icon {
+        font-size: 2rem;
+        margin: 0.5rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Weather Header -->
+<header class="weather-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-3"><i class="fas fa-cloud-sun me-2"></i>मौसम डैशबोर्ड</h1>
+                <div class="d-flex align-items-center">
+                    <div class="position-relative flex-grow-1 me-3">
+                        <input type="text" 
+                               class="location-input" 
+                               placeholder="शहर या स्थान खोजें..." 
+                               value="{{ location|default:'' }}">
+                        <div class="location-examples mt-2">
+                            <i class="fas fa-info-circle me-1"></i> उदाहरण: दिल्ली, मुंबई, बैंगलोर
+                        </div>
+                    </div>
+                    <button class="btn btn-warning">
+                        <i class="fas fa-search"></i> खोजें
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end mt-4 mt-md-0">
+                <div class="text-white">
+                    <div class="d-flex align-items-center justify-content-md-end">
+                        <div>
+                            <div class="weather-temp">{{ weather.main.temp|floatformat:0 }}°C</div>
+                            <div class="weather-desc">
+                                <i class="fas fa-location-dot me-2"></i>{{ weather.name }}, {{ weather.sys.country }}
+                            </div>
+                            <div class="text-muted">
+                                <small>अपडेटेड: {% now "h:i A" %}</small>
+                            </div>
+                        </div>
+                        <div class="ms-4">
+                            <i class="fas {{ weather.weather.0.icon|weather_icon }} weather-icon-lg"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<main class="py-4">
+    <div class="container">
+        <div class="row">
+            <!-- Current Weather -->
+            <div class="col-lg-8">
+                <div class="weather-card p-4 mb-4">
+                    <div class="current-weather p-4 rounded-3 mb-4">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h2 class="text-white mb-3">वर्तमान मौसम</h2>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-4">
+                                        <i class="fas {{ weather.weather.0.icon|weather_icon }} weather-icon-lg"></i>
+                                    </div>
+                                    <div>
+                                        <div class="weather-temp">{{ weather.main.temp|floatformat:0 }}°C</div>
+                                        <div class="weather-desc">{{ weather.weather.0.description|title }}</div>
+                                        <div class="d-flex align-items-center mt-2">
+                                            <span class="me-3"><i class="fas fa-temperature-arrow-up me-1"></i> {{ weather.main.temp_max|floatformat:0 }}°</span>
+                                            <span><i class="fas fa-temperature-arrow-down me-1"></i> {{ weather.main.temp_min|floatformat:0 }}°</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-4 mt-md-0">
+                                <div class="row">
+                                    <div class="col-6 mb-3">
+                                        <div class="weather-detail">
+                                            <i class="fas fa-droplet"></i>
+                                            <div>
+                                                <div class="fw-bold">{{ weather.main.humidity }}%</div>
+                                                <small class="text-muted">नमी</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <div class="weather-detail">
+                                            <i class="fas fa-wind"></i>
+                                            <div>
+                                                <div class="fw-bold">{{ weather.wind.speed|floatformat:0 }} किमी/घंटा</div>
+                                                <small class="text-muted">हवा की गति</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="weather-detail">
+                                            <i class="fas fa-gauge-high"></i>
+                                            <div>
+                                                <div class="fw-bold">{{ weather.main.pressure }} hPa</div>
+                                                <small class="text-muted">दबाव</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="weather-detail">
+                                            <i class="fas fa-eye"></i>
+                                            <div>
+                                                <div class="fw-bold">{{ weather.visibility|floatformat:0|default:'N/A' }} मीटर</div>
+                                                <small class="text-muted">दृश्यता</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Hourly Forecast -->
+                    <h3 class="section-title">आज का पूर्वानुमान</h3>
+                    <div class="row text-center">
+                        {% for hour in hourly_forecast|slice:":8" %}
+                        <div class="col">
+                            <div class="forecast-day">
+                                <div class="fw-bold">{{ hour.dt|date:'h A' }}</div>
+                                <div class="forecast-icon">
+                                    <i class="fas {{ hour.weather.0.icon|weather_icon }}"></i>
+                                </div>
+                                <div class="fw-bold">{{ hour.temp|floatformat:0 }}°</div>
+                                <div class="small text-muted">{{ hour.weather.0.description|title }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                    <h2 class="card-title mb-4">वर्तमान मौसम (Current Weather)</h2>
+                    {% if weather %}
+                        <div class="row align-items-center">
+                            <div class="col-md-6 text-center">
+                                <div class="weather-temp text-primary">{{ weather.main.temp|floatformat:0 }}°C</div>
+                                <div class="weather-desc text-muted mb-3">{{ weather.weather.0.description|title }}</div>
+                                <h4>{{ weather.name }}, {{ weather.sys.country }}</h4>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="weather-detail">
+                                    <i class="fas fa-temperature-high"></i>
+                                    <span>न्यूनतम: {{ weather.main.temp_min|floatformat:0 }}°C</span>
+                                </div>
+                                <div class="weather-detail">
+                                    <i class="fas fa-temperature-high"></i>
+                                    <span>अधिकतम: {{ weather.main.temp_max|floatformat:0 }}°C</span>
+                                </div>
+                                <div class="weather-detail">
+                                    <i class="fas fa-tint"></i>
+                                    <span>नमी: {{ weather.main.humidity }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning mb-0">
+                            मौसम डेटा उपलब्ध नहीं है। कृपया एक अलग स्थान आज़माएं।
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <main class="py-4">
+        <div class="container">
+            <div class="row">
+                <!-- Current Weather -->
+                <div class="col-lg-8">
+                    <div class="weather-card p-4 mb-4">
+                        <div class="current-weather p-4 rounded-3 mb-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h2 class="text-white mb-3">वर्तमान मौसम</h2>
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-4">
+                                            <i class="fas {{ weather.weather.0.icon|weather_icon }} weather-icon-lg"></i>
+                                        </div>
+                                        <div>
+                                            <div class="weather-temp">{{ weather.main.temp|floatformat:0 }}°C</div>
+                                            <div class="weather-desc">{{ weather.weather.0.description|title }}</div>
+                                            <div class="d-flex align-items-center mt-2">
+                                                <span class="me-3"><i class="fas fa-temperature-arrow-up me-1"></i> {{ weather.main.temp_max|floatformat:0 }}°</span>
+                                                <span><i class="fas fa-temperature-arrow-down me-1"></i> {{ weather.main.temp_min|floatformat:0 }}°</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mt-4 mt-md-0">
+                                    <div class="row">
+                                        <div class="col-6 mb-3">
+                                            <div class="weather-detail">
+                                                <i class="fas fa-droplet"></i>
+                                                <div>
+                                                    <div class="fw-bold">{{ weather.main.humidity }}%</div>
+                                                    <small class="text-muted">नमी</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <div class="weather-detail">
+                                                <i class="fas fa-wind"></i>
+                                                <div>
+                                                    <div class="fw-bold">{{ weather.wind.speed|floatformat:0 }} किमी/घंटा</div>
+                                                    <small class="text-muted">हवा की गति</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="weather-detail">
+                                                <i class="fas fa-gauge-high"></i>
+                                                <div>
+                                                    <div class="fw-bold">{{ weather.main.pressure }} hPa</div>
+                                                    <small class="text-muted">दबाव</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="weather-detail">
+                                                <i class="fas fa-eye"></i>
+                                                <div>
+                                                    <div class="fw-bold">{{ weather.visibility|floatformat:0|default:'N/A' }} मीटर</div>
+                                                    <small class="text-muted">दृश्यता</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Hourly Forecast -->
+                        <h3 class="section-title">आज का पूर्वानुमान</h3>
+                        <div class="row text-center">
+                            {% for hour in hourly_forecast|slice:":8" %}
+                            <div class="col">
+                                <div class="forecast-day">
+                                    <div class="fw-bold">{{ hour.dt|date:'h A' }}</div>
+                                    <div class="forecast-icon">
+                                        <i class="fas {{ hour.weather.0.icon|weather_icon }}"></i>
+                                    </div>
+                                    <div class="fw-bold">{{ hour.temp|floatformat:0 }}°</div>
+                                    <div class="small text-muted">{{ hour.weather.0.description|title }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Weather Alerts -->
+            <div class="weather-card mb-4">
+                <div class="p-4">
+                    <h3 class="section-title">मौसम चेतावनियाँ</h3>
+                    {% if active_alerts %}
+                        <div class="alert-list">
+                            {% for alert in active_alerts|slice:":3" %}
+                                <div class="alert alert-{% if alert.severity == 'high' or alert.severity == 'high' %}danger{% elif alert.severity == 'medium' or alert.severity == 'medium' %}warning{% else %}info{% endif %} mb-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <h6 class="alert-heading mb-1">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>{{ alert.title }}
+                                        </h6>
+                                        <span class="badge bg-{% if alert.severity == 'high' or alert.severity == 'high' %}danger{% elif alert.severity == 'medium' or alert.severity == 'medium' %}warning{% else %}info{% endif %} ms-2">
+                                            {% if alert.severity == 'high' or alert.severity == 'high' %}उच्च{% elif alert.severity == 'medium' or alert.severity == 'medium' %}मध्यम{% else %}सामान्य{% endif %}
+                                        </span>
+                                    </div>
+                                    <p class="mb-2 small">{{ alert.description|truncatewords:30 }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="far fa-clock me-1"></i>
+                                            {% if using_sample_alerts %}
+                                                {{ alert.valid_from|date:"h:i A" }} - {{ alert.valid_until|date:"d M, h:i A" }}
+                                            {% else %}
+                                                {{ alert.valid_from|date:"d M Y, h:i A" }}
+                                            {% endif %}
+                                        </small>
+                                        {% if not using_sample_alerts %}
+                                            <a href="{% url 'farm:weather_alert_detail' alert.id %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-arrow-right"></i>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if active_alerts|length > 3 and not using_sample_alerts %}
+                            <a href="#" class="btn btn-outline-primary btn-sm w-100">सभी चेतावनियाँ देखें</a>
+                        {% endif %}
+                        {% if using_sample_alerts %}
+                            <div class="alert alert-info small mb-0 mt-3">
+                                <i class="fas fa-info-circle me-1"></i> यह नमूना चेतावनियां हैं। वास्तविक समय की चेतावनियों के लिए डेटाबेस में अलर्ट जोड़ें।
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                            <p class="text-muted mb-0">कोई सक्रिय मौसम चेतावनी नहीं है</p>
+                            <small class="text-muted">सभी स्थितियाँ सामान्य हैं</small>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="weather-card">
+                <div class="p-4">
+                    <h3 class="section-title">आज का हाल</h3>
+                    <div class="d-flex justify-content-between mb-3">
+                        <div class="text-center">
+                            <div class="text-muted small">सूर्योदय</div>
+                            <div class="fw-bold">06:12 AM</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-muted small">सूर्यास्त</div>
+                            <div class="fw-bold">06:45 PM</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-muted small">हवा</div>
+                            <div class="fw-bold">8 km/h</div>
+                        </div>
+                    </div>
+                    <div class="progress mb-3" style="height: 6px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 65%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted">
+                        <span>बारिश की संभावना</span>
+                        <span>65%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 5-Day Forecast -->
+    <div class="weather-card p-4 mt-4">
+        <h3 class="section-title">5-दिन का पूर्वानुमान</h3>
+        <div class="row text-center">
+            {% for day in daily_forecast|slice:":5" %}
+            <div class="col">
+                <div class="forecast-day">
+                    <div class="fw-bold">{{ day.dt|date:'D' }}</div>
+                    <div class="forecast-icon">
+                        <i class="fas {{ day.weather.0.icon|weather_icon }}"></i>
+                    </div>
+                    <div class="fw-bold">{{ day.temp.max|floatformat:0 }}°</div>
+                    <div class="text-muted small">{{ day.temp.min|floatformat:0 }}°</div>
+                    <div class="small text-muted mt-1">{{ day.weather.0.description|title }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+            <div class="row text-center">
+                {% for day in "12345"|make_list %}
+                <div class="col">
+                    <div class="mb-2">
+                        <div class="text-muted small">{{ forloop.counter }} दिन बाद</div>
+                        <div class="h5 mb-1">32° / 24°</div>
+                        <div class="text-muted small mb-2">आंशिक बादल</div>
+                        <i class="fas fa-cloud-sun fa-2x text-warning"></i>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+    </div>
+</main>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'farm/js/weather-dashboard.js' %}"></script>
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Handle location input
+        const locationInput = document.querySelector('.location-input');
+        if (locationInput) {
+            locationInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const location = this.value.trim();
+                    if (location) {
+                        window.location.href = `?location=${encodeURIComponent(location)}`;
+                    }
+                }
+            });
+        }
+        
+        // Set current date in Hindi
+        const options = { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric',
+            locale: 'hi-IN'
+        };
+        const dateElement = document.querySelector('.current-date');
+        if (dateElement) {
+            const today = new Date();
+            dateElement.textContent = today.toLocaleDateString('hi-IN', options);
+        }
+    });
+</script>
+{% endblock %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6><i class="fas fa-cloud-rain me-2"></i>बारिश के मौसम में</h6>
+                            <ul class="small">
+                                <li>खेत की जल निकासी व्यवस्था सुनिश्चित करें</li>
+                                <li>फसलों को कीटों से बचाने के उपाय करें</li>
+                                <li>खरपतवार नियंत्रण पर ध्यान दें</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6><i class="fas fa-sun me-2"></i>गर्मी के मौसम में</h6>
+                            <ul class="small">
+                                <li>नियमित सिंचाई का ध्यान रखें</li>
+                                <li>मल्चिंग का उपयोग करें</li>
+                                <li>सुबह या शाम को ही खेती का काम करें</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6><i class="fas fa-wind me-2"></i>तूफान की स्थिति में</h6>
+                            <ul class="small">
+                                <li>फसलों को ढकने का प्रबंध करें</li>
+                                <li>पेड़-पौधों को सहारा दें</li>
+                                <li>आवश्यक उपकरण सुरक्षित स्थान पर रखें</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .card-header {
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    .list-group-item {
+        border-left: none;
+        border-right: none;
+    }
+    .list-group-item:first-child {
+        border-top: none;
+    }
+</style>
+{% endblock %}

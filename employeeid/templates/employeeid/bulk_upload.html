@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Bulk Upload Employees{% endblock %}
+
+{% block extra_css %}
+<!-- Employee ID Card CSS -->
+<link rel="stylesheet" href="{% static 'employeeid/css/employeeid.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container bulk-upload-container">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="upload-instructions">
+                <h5><i class="fas fa-info-circle me-2"></i>Instructions</h5>
+                <ol>
+                    <li>Download the <a href="#" id="downloadTemplate" class="text-primary">CSV template</a></li>
+                    <li>Fill in the employee details following the template format</li>
+                    <li>Upload the completed CSV file below</li>
+                </ol>
+            </div>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="upload-form">
+                <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="{{ form.csv_file.id_for_label }}" class="form-label fw-bold">
+                            {{ form.csv_file.label }}
+                        </label>
+                        {{ form.csv_file|add_class:"form-control form-control-lg" }}
+                        {% if form.csv_file.help_text %}
+                            <div class="form-text">{{ form.csv_file.help_text }}</div>
+                        {% endif %}
+                        {% if form.csv_file.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.csv_file.errors.0 }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="upload-actions">
+                        <a href="{% url 'employeeid:upload_employee' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Single Upload
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="fas fa-upload me-1"></i> Upload CSV
+                        </button>
+                    </div>
+                </form>
+            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Employee ID Card JavaScript -->
+<script src="{% static 'employeeid/js/employeeid.js' %}"></script>
+
+<!-- Bulk Upload Specific JS -->
+<script>
+// Handle template download
+const downloadTemplate = document.getElementById('downloadTemplate');
+if (downloadTemplate) {
+    downloadTemplate.addEventListener('click', function(e) {
+        e.preventDefault();
+        // CSV header row
+        const headers = [
+            'full_name',
+            'employee_id',
+            'designation',
+            'department',
+            'company',
+            'contact',
+            'email',
+            'join_date (YYYY-MM-DD)'
+        ];
+        
+        // Create example data
+        const example = [
+            'John Doe',
+            'EMP001',
+            'Software Developer',
+            'IT',
+            'StudyShala',
+            '1234567890',
+            'john@example.com',
+            '2023-01-15'
+        ];
+        
+        // Create CSV content
+        let csvContent = 'data:text/csv;charset=utf-8,';
+        csvContent += headers.join(',') + '\r\n';
+        csvContent += example.join(',') + '\r\n';
+        
+        // Create download link
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', 'employee_import_template.csv');
+        document.body.appendChild(link);
+        
+        // Trigger download
+        link.click();
+        document.body.removeChild(link);
+    });
+}
+
+// Add any bulk upload specific JS here
+</script>
+{% endblock %}

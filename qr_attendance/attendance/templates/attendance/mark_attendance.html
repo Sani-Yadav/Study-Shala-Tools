@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Attendance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .attendance-form {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .form-title {
+            color: #0d6efd;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .form-control:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        .btn-submit {
+            padding: 10px 30px;
+            font-weight: 500;
+        }
+        .camera-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6c757d;
+        }
+        .input-group-text {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="attendance-form">
+            <h2 class="form-title">📝 Mark Your Attendance</h2>
+            
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label for="session_id" class="form-label">Session ID</label>
+                    <div class="input-group">
+                        <input type="text" 
+                               class="form-control form-control-lg" 
+                               id="session_id" 
+                               name="session_id" 
+                               placeholder="Enter session ID" 
+                               required>
+                        <span class="input-group-text">
+                            <i class="fas fa-qrcode"></i>
+                        </span>
+                    </div>
+                    <div class="form-text">Get the session ID from your instructor or scan the QR code</div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="roll_no" class="form-label">Your Roll Number</label>
+                    <div class="input-group mb-3">
+                        <input type="text" 
+                               class="form-control form-control-lg" 
+                               id="roll_no" 
+                               name="roll_no" 
+                               placeholder="Enter your roll number" 
+                               required>
+                        <span class="camera-icon" onclick="startCamera()">
+                            <i class="fas fa-camera"></i>
+                        </span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="student_name" class="form-label">Your Full Name</label>
+                        <input type="text"
+                               class="form-control form-control-lg"
+                               id="student_name"
+                               name="student_name"
+                               placeholder="Enter your full name"
+                               required>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg btn-submit">
+                        <i class="fas fa-check-circle me-2"></i> Mark Attendance
+                    </button>
+                </div>
+            </form>
+            
+            <div class="text-center mt-4">
+                <p class="text-muted">Are you an instructor? 
+                    <a href="/attendance/generate/" class="text-decoration-none">Generate QR Code</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Scanner Modal -->
+    <div class="modal fade" id="qrScanner" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Scan QR Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <video id="scanner" width="100%" style="border-radius: 8px;"></video>
+                    <div id="scanner-loading" class="my-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading scanner...</span>
+                        </div>
+                        <p class="mt-2">Loading scanner...</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script>
+        // Form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+
+        // QR Code Scanner
+        function startCamera() {
+            const modal = new bootstrap.Modal(document.getElementById('qrScanner'));
+            const video = document.getElementById('scanner');
+            const loadingDiv = document.getElementById('scanner-loading');
+            let stream = null;
+
+            // Show modal and start camera
+            modal.show();
+            loadingDiv.style.display = 'block';
+            
+            // Request camera access
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                .then(function(mediaStream) {
+                    stream = mediaStream;
+                    video.srcObject = stream;
+                    video.setAttribute('playsinline', true);
+                    video.play();
+                    loadingDiv.style.display = 'none';
+                    
+                    // Start QR code scanning
+                    const canvasElement = document.createElement('canvas');
+                    const canvas = canvasElement.getContext('2d');
+                    
+                    function tick() {
+                        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                            canvasElement.height = video.videoHeight;
+                            canvasElement.width = video.videoWidth;
+                            canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                            const imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                            const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                                inversionAttempts: 'dontInvert',
+                            });
+                            
+                            if (code) {
+                                // Found QR code
+                                document.getElementById('session_id').value = code.data;
+                                modal.hide();
+                                stopCamera(stream);
+                                return;
+                            }
+                        }
+                        requestAnimationFrame(tick);
+                    }
+                    
+                    video.onplaying = function() {
+                        tick();
+                    };
+                })
+                .catch(function(err) {
+                    console.error("Error accessing camera:", err);
+                    loadingDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Could not access camera: ${err.message}
+                        </div>
+                    `;
+                });
+            
+            // Stop camera when modal is closed
+            document.getElementById('qrScanner').addEventListener('hidden.bs.modal', function() {
+                if (stream) {
+                    stopCamera(stream);
+                }
+            });
+        }
+        
+        function stopCamera(stream) {
+            if (stream) {
+                const tracks = stream.getTracks();
+                tracks.forEach(track => track.stop());
+            }
+                '<p class="text-muted">Camera access is required to scan QR codes.</p>';
+        }
+    </script>
+</body>
+</html>

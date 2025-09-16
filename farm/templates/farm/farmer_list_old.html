@@ -1,0 +1,1040 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}किसान सूची - किसान सहायता पोर्टल{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #2e7d32;
+        --secondary-color: #388e3c;
+        --accent-color: #8bc34a;
+        --warning-color: #ffa000;
+        --danger-color: #d32f2f;
+        --light-bg: #f1f8e9;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --border-radius: 12px;
+    }
+    
+    body {
+        background-color: #f5f5f5;
+        font-family: 'Hind Siliguri', sans-serif;
+        color: #2e2e2e;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+        color: white;
+        padding: 2.5rem 0;
+        margin: -1.5rem -1.5rem 2.5rem -1.5rem;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .farmer-card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        background: white;
+        border-top: 4px solid var(--primary-color);
+    }
+    
+    .farmer-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(46, 125, 50, 0.15);
+    }
+
+    .crop-cycle {
+        height: 8px;
+        border-radius: 4px;
+        background: #e0e0e0;
+        margin: 10px 0;
+        overflow: hidden;
+    }
+
+    .cycle-progress {
+        height: 100%;
+        background: linear-gradient(90deg, #4caf50, #8bc34a);
+        width: 65%;
+        border-radius: 4px;
+    }
+
+    .weather-card {
+        background: linear-gradient(135deg, #2196f3, #21cbf3);
+        color: white;
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .btn-action {
+        border-radius: 20px;
+        padding: 8px 20px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+    }
+
+    .btn-primary:hover {
+        background-color: #1b5e20;
+        border-color: #1b5e20;
+    }
+
+    .crop-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-left: 4px solid var(--accent-color);
+    }
+
+    .alert-section {
+        background: #fff8e1;
+        border-radius: 10px;
+        padding: 15px;
+        border-left: 4px solid var(--warning-color);
+    }
+
+    .nav-pills .nav-link.active {
+        background-color: var(--primary-color);
+    }
+
+    .nav-pills .nav-link {
+        color: #2e7d32;
+    }
+
+    .section-title {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin: 20px 0 15px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .info-item {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .info-item i {
+        color: var(--primary-color);
+        margin-right: 10px;
+        margin-top: 4px;
+    }
+
+    .crop-badge {
+        font-size: 0.75rem;
+        padding: 0.35em 0.65em;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        background-color: #e8f5e9;
+        color: var(--primary-color);
+        border-radius: 12px;
+    }
+
+    .progress-thin {
+        height: 6px;
+    }
+
+    .crop-status {
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .action-buttons .btn {
+        margin: 0 5px 10px 0;
+        min-width: 100px;
+    }
+    
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 3px;
+        transition: all 0.2s;
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-2px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Section -->
+    <div class="page-header mb-4">
+        <div class="container text-center">
+            <div class="header-icon">
+                <i class="fas fa-tractor"></i>
+            </div>
+            <h1 class="h2 mb-3">किसान सहायता पोर्टल</h1>
+            <p class="lead mb-0">आपकी खेती, आपकी सफलता - हर कदम पर आपके साथ</p>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                <input type="text" class="form-control form-control-lg" placeholder="किसान, फसल या गाँव खोजें...">
+                <button class="btn btn-primary px-4" type="button">खोजें</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row justify-content-center">
+        <!-- Main Content -->
+        <div class="col-lg-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">किसान विवरण</h2>
+                <div>
+                    <button class="btn btn-outline-primary me-2">
+                        <i class="fas fa-edit me-1"></i> संपादित करें
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-print me-1"></i> प्रिंट करें
+                    </button>
+                </div>
+            </div>
+
+            <!-- Farmer Details Card -->
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-header bg-white border-0 py-3" style="border-radius: 12px 12px 0 0; border-bottom: 3px solid #28a745;">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-user text-success me-2"></i>
+                        <h5 class="mb-0 fw-bold">किसान विवरण</h5>
+                    </div>
+                </div>
+                        <div class="card-body p-4">
+                            <div class="row g-3">
+                                <div class="col-md-9">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <h3 class="mb-1">रामकुमार शर्मा</h3>
+                                            <p class="text-muted mb-2">
+                                                <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                                सूरजपुर, रायपुर, छत्तीसगढ़
+                                            </p>
+                                        </div>
+                                        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2">
+                                            <i class="fas fa-circle me-1 small"></i> सक्रिय
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Contact Info -->
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <div class="p-3 bg-light rounded-3 h-100">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-soft-primary p-2 rounded-circle me-3">
+                                                        <i class="fas fa-phone text-primary"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-muted small">मोबाइल नंबर</div>
+                                                        <div class="fw-bold">+91 98765 43210</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="p-3 bg-light rounded-3 h-100">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-soft-success p-2 rounded-circle me-3">
+                                                        <i class="fas fa-id-card text-success"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-muted small">आईडी नंबर</div>
+                                                        <div class="fw-bold">FARM-2023-001</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="p-3 bg-light rounded-3 h-100">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-soft-warning p-2 rounded-circle me-3">
+                                                        <i class="fas fa-calendar-day text-warning"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-muted small">पंजीकरण तिथि</div>
+                                                        <div class="fw-bold">15 जनवरी 2023</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="position-relative d-inline-block mb-3">
+                                        <img src="https://ui-avatars.com/api/?name=रामकुमार+शर्मा&background=4facfe&color=fff&size=120" 
+                                             alt="Farmer" 
+                                             class="rounded-circle shadow" 
+                                             style="width: 100px; height: 100px; object-fit: cover; border: 4px solid white;">
+                                        <span class="position-absolute bottom-0 end-0 bg-success rounded-circle p-2" style="border: 3px solid white;">
+                                            <i class="fas fa-check text-white"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    <button class="btn btn-outline-primary">
+                        <i class="fas fa-edit me-1"></i> अपडेट करें
+                    </button>
+                    <button class="btn btn-outline-success">
+                        <i class="fas fa-rupee-sign me-1"></i> भुगतान
+                    </button>
+                    <button class="btn btn-outline-info">
+                        <i class="fas fa-camera me-1"></i> फोटो जोड़ें
+                    </button>
+                    <button class="btn btn-outline-warning">
+                        <i class="fas fa-file-invoice me-1"></i> रिपोर्ट
+                    </button>
+                    <button class="btn btn-outline-danger">
+                        <i class="fas fa-trash-alt me-1"></i> डिलीट करें
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-soft-primary p-2 rounded-circle me-3">
+                                                    <i class="fas fa-calendar-alt text-primary fs-5"></i>
+                                                </div>
+                                                <h5 class="mb-0 fw-semibold text-dark">अगली फसल की योजना</h5>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-start mb-3">
+                                                <div class="me-3">
+                                                    <div class="bg-soft-warning p-3 rounded-circle">
+                                                        <i class="fas fa-wheat-awn text-warning fs-4"></i>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-dark mb-1">गेहूं</h4>
+                                                    <span class="badge bg-soft-primary text-primary mb-3">आगामी</span>
+                                                    
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <i class="far fa-calendar-alt text-muted me-2"></i>
+                                                        <div>
+                                                            <small class="text-muted">बुवाई की तारीख</small>
+                                                            <div class="fw-bold">25 नवंबर 2024</div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="d-flex align-items-center mb-3">
+                                                        <i class="far fa-clock text-muted me-2"></i>
+                                                        <div>
+                                                            <small class="text-muted">बचे हुए दिन</small>
+                                                            <div class="fw-bold">94 दिन</div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="alert alert-soft-info small border-0 p-2 mb-0">
+                                                        <i class="fas fa-lightbulb me-1"></i>
+                                                        <strong>सुझाव:</strong> उन्नत किस्म के बीजों का उपयोग करें और मिट्टी की जांच अवश्य कराएं।
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <button class="btn btn-outline-primary btn-sm w-100 mt-2" data-bs-toggle="modal" data-bs-target="#addCropPlan">
+                                                <i class="fas fa-plus-circle me-1"></i> योजना अपडेट करें
+                                            </button>
+                                        </div>
+                                    </div>
+                                                <button class="btn btn-sm btn-outline-primary">योजना देखें</button>
+                                            </div>
+                                            <div class="alert alert-warning mt-2 p-2 small">
+                                                <i class="fas fa-info-circle me-1"></i> बुवाई से पहले मिट्टी की जांच करवा लें
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                                <!-- Weather and Farming Roadmap -->
+                                <div class="col-md-6">
+                                    <!-- Weather Card -->
+                                    <div class="card mb-3">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0"><i class="fas fa-cloud-sun text-info me-2"></i>मौसम अपडेट</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <!-- Current Weather -->
+                                                </div>
+                                                <h5 class="mb-0 fw-bold text-white">मौसम अपडेट</h5>
+                                                <button class="btn btn-sm btn-light btn-refresh ms-auto" style="border-radius: 20px; padding: 0.25rem 0.75rem;">
+                                                    <i class="fas fa-sync-alt"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="card-body p-4">
+                                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                                <div>
+                                                    <div class="d-flex align-items-baseline">
+                                                        <h1 class="display-4 fw-bold mb-0 text-gradient" style="background: linear-gradient(45deg, #6e8efb, #a777e3); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">28°C</h1>
+                                                        <span class="ms-2 text-dark fw-medium">साफ आसमान</span>
+                                                    </div>
+                                                    <div class="text-muted small">महसूस हो रहा 30°C</div>
+                                                </div>
+                                                <div class="text-center">
+                                                    <i class="fas fa-sun text-warning" style="font-size: 3.5rem; filter: drop-shadow(0 4px 8px rgba(255, 193, 7, 0.3));"></i>
+                                                    <div class="small fw-medium" style="color: #5a5a5a;">धूपदार</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="weather-stats mb-4">
+                                                <div class="row g-3">
+                                                    <div class="col-4">
+                                                        <div class="weather-stat-item p-3 rounded-3 text-center" style="background-color: #f8f9fa;">
+                                                            <div class="text-muted small mb-1">
+                                                                <i class="fas fa-wind me-1 text-primary"></i> हवा
+                                                            </div>
+                                                            <div class="fw-bold">12 km/h</div>
+                                                            <div class="text-muted small mt-1">पूर्व</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="weather-stat-item p-3 rounded-3 text-center" style="background-color: #f8f9fa;">
+                                                            <div class="text-muted small mb-1">
+                                                                <i class="fas fa-tint me-1 text-info"></i> नमी
+                                                            </div>
+                                                            <div class="fw-bold">65%</div>
+                                                            <div class="text-muted small mt-1">सामान्य</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-4">
+                                                        <div class="weather-stat-item p-3 rounded-3 text-center" style="background-color: #f8f9fa;">
+                                                            <div class="text-muted small mb-1">
+                                                                <i class="fas fa-cloud-rain me-1 text-primary"></i> बारिश
+                                                            </div>
+                                                            <div class="fw-bold">10%</div>
+                                                            <div class="text-muted small mt-1">कम संभावना</div>
+                                                        </div>
+                                                        <small class="text-muted">कम संभावना</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="alert alert-soft-warning border-0 small d-flex align-items-center" role="alert">
+                                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                                <div>
+                                                    <strong>मौसम चेतावनी:</strong> कल भारी बारिश (80%) की संभावना।
+                                                    <div class="mt-1">सुझाव: खेत की नालियों को साफ रखें।</div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="text-end">
+                                                <a href="#" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-sync-alt me-1"></i> अपडेट करें
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Farming Roadmap -->
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-white border-0 py-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-soft-success p-2 rounded-circle me-3">
+                                                    <i class="fas fa-map-marked-alt text-success fs-5"></i>
+                                                </div>
+                                                <h5 class="mb-0 fw-semibold text-dark">फसल रोडमैप</h5>
+                                                <div class="ms-auto">
+                                                    <span class="badge bg-soft-primary">चालू फसल</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div class="list-group list-group-flush">
+                                                <!-- Completed Step -->
+                                                <div class="list-group-item border-0 py-3 px-4">
+                                                    <div class="d-flex">
+                                                        <div class="me-3 text-center">
+                                                            <div class="icon-circle bg-soft-success text-success">
+                                                                <i class="fas fa-check"></i>
+                                                            </div>
+                                                            <div class="vr mx-auto" style="height: 30px; width: 2px; background-color: #e9ecef;"></div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <h6 class="mb-1 fw-semibold">बुवाई</h6>
+                                                                <span class="badge bg-soft-success text-success">पूर्ण</span>
+                                                            </div>
+                                                            <p class="mb-0 small text-muted">15 जुलाई 2024</p>
+                                                            <p class="mb-0 small text-success mt-1">
+                                                                <i class="fas fa-check-circle me-1"></i> सफलतापूर्वक पूरा हुआ
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Current Active Step -->
+                                                <div class="list-group-item border-0 py-3 px-4 bg-light">
+                                                    <div class="d-flex">
+                                                        <div class="me-3 text-center">
+                                                            <div class="icon-circle bg-soft-warning text-warning">
+                                                                <i class="fas fa-spinner fa-spin"></i>
+                                                            </div>
+                                                            <div class="vr mx-auto" style="height: 30px; width: 2px; background-color: #e9ecef;"></div>
+                                                        </div>
+                                                        <div class="flex-grow-1">
+                                                            <div class="d-flex justify-content-between align-items-center">
+                                                                <h6 class="mb-1 fw-semibold">खरपतवार नियंत्रण</h6>
+                                                                <span class="badge bg-soft-warning text-warning">चालू</span>
+                                                            </div>
+                                                            <p class="mb-1 small text-muted">30 जुलाई 2024</p>
+                                                            <div class="alert alert-soft-info small border-0 p-2 mt-2">
+                                                                <i class="fas fa-info-circle me-1"></i>
+                                                                अगला चरण: 5 दिन बाद
+                                                            </div>
+                                                            <button class="btn btn-sm btn-outline-primary mt-2">
+                                                                <i class="fas fa-check-circle me-1"></i> कार्य पूरा मार्क करें
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Upcoming Steps -->
+                                                <div class="list-group-item border-0 py-3 px-4">
+                                                    <div class="d-flex">
+                                                        <div class="me-3 text-center">
+                                                            <div class="icon-circle bg-soft-secondary text-muted">
+                                                                <i class="far fa-clock"></i>
+                                                            </div>
+                                                            <div class="vr mx-auto" style="height: 30px; width: 2px; background-color: #e9ecef;"></div>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-1 fw-semibold">कीटनाशक छिड़काव</h6>
+                                                            <p class="mb-0 small text-muted">15 अगस्त 2024</p>
+                                                            <small class="text-muted">(25 दिन बाद)</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="list-group-item border-0 py-3 px-4">
+                                                    <div class="d-flex">
+                                                        <div class="me-3 text-center">
+                                                            <div class="icon-circle bg-soft-secondary text-muted">
+                                                                <i class="far fa-clock"></i>
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <h6 class="mb-1 fw-semibold">कटाई</h6>
+                                                            <p class="mb-0 small text-muted">15 नवंबर 2024</p>
+                                                            <small class="text-muted">(3 महीने बाद)</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="card-footer bg-white border-0 text-center py-3">
+                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#viewFullRoadmap">
+                                                    <i class="fas fa-expand-alt me-1"></i> पूरा रोडमैप देखें
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>        </div>
+                                        </div>
+                                        <div class="card-footer text-center">
+                                            <button class="btn btn-sm btn-outline-primary">पूरा रोडमैप देखें</button>
+                                        </div>
+                                    </div>
+{{ ... }}
+                                </div>
+                            </div>
+
+                            <div class="action-buttons mt-4">
+                                <div class="d-flex flex-wrap gap-2">
+                                    <!-- Call Button -->
+                                    <button class="btn btn-action btn-call" 
+                                            data-phone="{{ farmer.phone|default:'+911234567890' }}" 
+                                            data-bs-toggle="tooltip" 
+                                            title="किसान को कॉल करें"
+                                            style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+                                                   border: none;
+                                                   color: white;
+                                                   border-radius: 8px;
+                                                   padding: 0.5rem 1rem;
+                                                   transition: all 0.3s ease;
+                                                   box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                        <i class="fas fa-phone-alt me-1"></i> कॉल करें
+                                    </button>
+
+                                    <!-- Update Button -->
+                                    <button class="btn btn-action btn-update" 
+                                            data-farmer-id="1" 
+                                            data-bs-toggle="tooltip" 
+                                            title="किसान की जानकारी अपडेट करें"
+                                            style="background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+                                                   border: none;
+                                                   color: white;
+                                                   border-radius: 8px;
+                                                   padding: 0.5rem 1rem;
+                                                   transition: all 0.3s ease;
+                                                   box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                        <i class="fas fa-edit me-1"></i> अपडेट करें
+                                    </button>
+                                    <!-- Payment Button -->
+                                    <button class="btn btn-action btn-payment" 
+                                            data-farmer-id="1" 
+                                            data-bs-toggle="tooltip" 
+                                            title="भुगतान दर्ज करें"
+                                            style="background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+                                                   border: none;
+                                                   color: white;
+                                                   border-radius: 8px;
+                                                   padding: 0.5rem 1rem;
+                                                   transition: all 0.3s ease;
+                                                   box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                        <i class="fas fa-rupee-sign me-1"></i> भुगतान
+                                    </button>
+
+                                    <!-- Report Button -->
+                                    <button class="btn btn-action" 
+                                            data-bs-toggle="tooltip" 
+                                            title="विस्तृत रिपोर्ट देखें"
+                                            style="background: linear-gradient(135deg, #00BCD4 0%, #0097A7 100%);
+                                                   border: none;
+                                                   color: white;
+                                                   border-radius: 8px;
+                                                   padding: 0.5rem 1rem;
+                                                   transition: all 0.3s ease;
+                                                   box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                        <i class="fas fa-chart-line me-1"></i> रिपोर्ट
+                                    </button>
+
+                                    <!-- Photo Button -->
+                                    <button class="btn btn-action" 
+                                            data-bs-toggle="tooltip" 
+                                            title="फसल की तस्वीर जोड़ें"
+                                            style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+                                                   border: none;
+                                                   color: white;
+                                                   border-radius: 8px;
+                                                   padding: 0.5rem 1rem;
+                                                   transition: all 0.3s ease;
+                                                   box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                        <i class="fas fa-camera me-1"></i> तस्वीर
+                                    </button>
+                                    <!-- More Options Dropdown -->
+                                    <div class="btn-group ms-auto">
+                                        <button type="button" 
+                                                class="btn btn-action dropdown-toggle" 
+                                                data-bs-toggle="dropdown" 
+                                                aria-expanded="false"
+                                                style="background: linear-gradient(135deg, #607D8B 0%, #455A64 100%);
+                                                       border: none;
+                                                       color: white;
+                                                       border-radius: 8px;
+                                                       padding: 0.5rem 1rem;
+                                                       transition: all 0.3s ease;
+                                                       box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow" style="border: none; border-radius: 8px; overflow: hidden;">
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                                    <i class="fas fa-file-export me-2 text-primary"></i>
+                                                    <span>निर्यात करें</span>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center" href="#">
+                                                    <i class="fas fa-print me-2 text-info"></i>
+                                                    <span>प्रिंट करें</span>
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider my-1"></li>
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center text-danger" href="#">
+                                                    <i class="fas fa-trash-alt me-2"></i>
+                                                    <span>हटाएं</span>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Farmer Card -->
+
+            <!-- Second Farmer Card -->
+            <div class="card farmer-card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center mb-3 mb-md-0">
+                            <img src="https://via.placeholder.com/100" alt="Farmer" class="farmer-avatar mb-2">
+                            <h5 class="mb-1">सुनीता यादव</h5>
+                            <p class="text-muted small mb-2">गाँव: बेमेतरा, जिला: बेमेतरा</p>
+                            <span class="badge bg-warning text-dark">अपूर्ण</span>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6 class="section-title">वर्तमान फसल</h6>
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-info-circle me-2"></i> कोई सक्रिय फसल नहीं है
+                                    </div>
+
+                                    <h6 class="section-title mt-3">अगली फसल की योजना</h6>
+                                    <div class="alert alert-light">
+                                        <i class="fas fa-calendar-alt me-2"></i> अगली बुवाई: 1 अक्टूबर (सरसों)
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="section-title">सुझाव</h6>
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-lightbulb me-2"></i> 
+                                        आपकी मिट्टी के लिए सरसों की खेती उपयुक्त है। 
+                                        <a href="#" class="alert-link">विस्तार से जानें</a>
+                                    </div>
+                                    
+                                    <div class="alert alert-secondary mt-3">
+                                        <i class="fas fa-tasks me-2"></i>
+                                        <strong>अगले चरण:</strong> खेत की तैयारी (15 सितंबर)
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="action-buttons mt-3">
+                                <button class="btn btn-sm btn-primary">
+                                    <i class="fas fa-phone-alt me-1"></i> कॉल करें
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit me-1"></i> अपडेट करें
+                                </button>
+                                <button class="btn btn-sm btn-outline-success" disabled>
+                                    <i class="fas fa-rupee-sign me-1"></i> भुगतान
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary float-end">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Second Farmer Card -->
+        </div>
+
+        <!-- Right Sidebar -->
+        <div class="col-lg-4">
+            <!-- Weather Forecast -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-cloud-sun me-2"></i> 7 दिन का मौसम पूर्वानुमान
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <span>आज</span>
+                                <span><i class="fas fa-sun text-warning"></i> 32° / 26°</span>
+                                <span>आंशिक बादल</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <span>कल</span>
+                                <span><i class="fas fa-cloud-rain text-info"></i> 30° / 25°</span>
+                                <span>बारिश</span>
+                            </div>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <span>परसों</span>
+                                <span><i class="fas fa-cloud text-secondary"></i> 31° / 26°</span>
+                                <span>बादल छाए</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crop Calendar -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-calendar-alt me-2"></i> फसल कैलेंडर
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-success">सितंबर</h6>
+                        <ul class="list-unstyled ms-3">
+                            <li class="mb-2">
+                                <i class="fas fa-seedling text-success me-2"></i>
+                                धान की कटाई (15-30 सितंबर)
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-tractor text-primary me-2"></i>
+                                गेहूं की बुवाई की तैयारी (25 सितंबर से)
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h6 class="text-success">अक्टूबर</h6>
+                        <ul class="list-unstyled ms-3">
+                            <li class="mb-2">
+                                <i class="fas fa-seedling text-success me-2"></i>
+                                गेहूं की बुवाई (1-15 अक्टूबर)
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-seedling text-success me-2"></i>
+                                सरसों की बुवाई (1-20 अक्टूबर)
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-bolt me-2"></i> त्वरित कार्य
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap">
+                        <button class="btn btn-outline-primary btn-sm m-1">
+                            <i class="fas fa-plus me-1"></i> नया किसान
+                        </button>
+                        <button class="btn btn-outline-success btn-sm m-1">
+                            <i class="fas fa-file-export me-1"></i> एक्सपोर्ट
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm m-1">
+                            <i class="fas fa-print me-1"></i> प्रिंट
+                        </button>
+                        <button class="btn btn-outline-warning btn-sm m-1">
+                            <i class="fas fa-bell me-1"></i> अलर्ट
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Search and Filter Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" class="form-control" placeholder="किसान का नाम या फोन नंबर खोजें...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select">
+                        <option selected>सभी गाँव</option>
+                        <option>गाँव 1</option>
+                        <option>गाँव 2</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select">
+                        <option selected>सभी फसलें</option>
+                        <option>गेहूं</option>
+                        <option>धान</option>
+                        <option>सरसों</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Farmer Cards -->
+    <div class="row">
+        {% if farmers %}
+            {% for farmer in farmers %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card farmer-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <img src="https://ui-avatars.com/api/?name={{ farmer.name }}&background=2c7be5&color=fff&size=80" 
+                                 alt="{{ farmer.name }}" class="farmer-avatar me-3">
+                            <div>
+                                <h5 class="mb-1">{{ farmer.name }}</h5>
+                                <p class="text-muted mb-1"><i class="fas fa-map-marker-alt me-2"></i>{{ farmer.village }}</p>
+                                <p class="mb-0"><i class="fas fa-phone-alt me-2"></i>{{ farmer.phone }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <span class="badge bg-primary">{{ farmer.farm_set.all|length }} खेत</span>
+                            <span class="badge bg-success">3 एकड़</span>
+                            <span class="badge bg-info">2 फसलें</span>
+                        </div>
+                        
+                        <h6 class="text-uppercase text-muted small fw-bold mb-2">वर्तमान फसलें</h6>
+                        <div class="mb-3">
+                            <span class="badge bg-success bg-opacity-10 text-success crop-badge">
+                                <i class="fas fa-wheat-alt me-1"></i> गेहूं (2 एकड़)
+                            </span>
+                            <span class="badge bg-warning bg-opacity-10 text-warning crop-badge">
+                                <i class="fas fa-leaf me-1"></i> सरसों (1 एकड़)
+                            </span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-success small"><i class="fas fa-calendar-check me-1"></i> अंतिम अपडेट: 2 दिन पहले</span>
+                            </div>
+                            <div>
+                                <a href="#" class="action-btn bg-primary text-white" title="देखें">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" class="action-btn bg-success text-white" title="संपादित करें">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" class="action-btn bg-info text-white" title="फसल जोड़ें">
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-users-slash display-4 text-muted mb-3"></i>
+                        <h4>कोई किसान नहीं मिला</h4>
+                        <p class="text-muted mb-0">अभी तक कोई किसान दर्ज नहीं किया गया है। नया किसान जोड़ने के लिए ऊपर दिए गए बटन पर क्लिक करें।</p>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if farmers %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">पिछला</a>
+            </li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+                <a class="page-link" href="#">अगला</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom JavaScript -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Call button functionality
+        document.querySelectorAll('.btn-call').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const phoneNumber = this.getAttribute('data-phone');
+                if (phoneNumber) {
+                    window.location.href = `tel:${phoneNumber}`;
+                }
+            });
+        });
+
+        // Update button functionality
+        document.querySelectorAll('.btn-update').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const farmerId = this.getAttribute('data-farmer-id');
+                if (farmerId) {
+                    window.location.href = `/farm/farmer/update/${farmerId}/`;
+                }
+            });
+        });
+
+        // Payment button functionality
+        document.querySelectorAll('.btn-payment').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const farmerId = this.getAttribute('data-farmer-id');
+                if (farmerId) {
+                    window.location.href = `/farm/farmer/payment/${farmerId}/`;
+                }
+            });
+        });
+
+        // Add farmer button
+        document.querySelector('.btn-add-farmer')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = '/farm/farmer/add/';
+        });
+
+        // Initialize all progress bars
+        document.querySelectorAll('.progress-bar').forEach(bar => {
+            const progress = bar.getAttribute('aria-valuenow');
+            bar.style.width = `${progress}%`;
+        });
+
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

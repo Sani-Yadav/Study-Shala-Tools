@@ -1,27 +1,103 @@
 {% extends 'base.html' %}
-{% block title %}Upload Employee Data{% endblock %}
+{% load widget_tweaks %}
+
+{% block title %}Create Employee ID{% endblock %}
+
+{% block extra_css %}
+<!-- Employee ID Card CSS -->
+<link rel="stylesheet" href="{% static 'employeeid/css/employeeid.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="container py-4">
   <div class="row justify-content-center">
-    <div class="col-md-8">
+    <div class="col-lg-8">
       <div class="card shadow">
         <div class="card-header bg-primary text-white">
-          <h3 class="mb-0">Upload Employee Data</h3>
+          <h3 class="mb-0">
+            <i class="fas fa-id-card me-2"></i>Create New Employee ID
+          </h3>
         </div>
         <div class="card-body">
-          <form method="post" enctype="multipart/form-data">
+          <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
             {% csrf_token %}
-            <div class="mb-3">
-              {{ form.as_p }}
+            
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3">
+                <label for="id_full_name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                {{ form.full_name|add_class:"form-control"|attr:"required" }}
+                <div class="invalid-feedback">Please enter the employee's full name.</div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="id_employee_id" class="form-label">Employee ID <span class="text-danger">*</span></label>
+                {{ form.employee_id|add_class:"form-control"|attr:"required" }}
+                <div class="invalid-feedback">Please enter a unique employee ID.</div>
+              </div>
             </div>
-            <button type="submit" class="btn btn-success w-100">
-              <i class="fas fa-upload me-2"></i> Upload
-            </button>
+
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3">
+                <label for="id_designation" class="form-label">Designation <span class="text-danger">*</span></label>
+                {{ form.designation|add_class:"form-control"|attr:"required" }}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="id_department" class="form-label">Department <span class="text-danger">*</span></label>
+                {{ form.department|add_class:"form-control"|attr:"required" }}
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3">
+                <label for="id_company" class="form-label">Company <span class="text-danger">*</span></label>
+                {{ form.company|add_class:"form-control"|attr:"required" }}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="id_join_date" class="form-label">Join Date <span class="text-danger">*</span></label>
+                {{ form.join_date|add_class:"form-control"|attr:"type:date"|attr:"required" }}
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-6 mb-3">
+                <label for="id_contact" class="form-label">Contact Number <span class="text-danger">*</span></label>
+                {{ form.contact|add_class:"form-control"|attr:"required" }}
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="id_email" class="form-label">Email <span class="text-danger">*</span></label>
+                {{ form.email|add_class:"form-control"|attr:"type:email"|attr:"required" }}
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="id_profile_image" class="form-label">
+                Profile Photo <span class="text-danger">*</span>
+                <small class="text-muted d-block">(Passport size photo with white background recommended)</small>
+              </label>
+              {{ form.profile_image|add_class:"form-control"|attr:"accept:image/*"|attr:"required" }}
+              <div class="form-text">Max size: 2MB. Allowed formats: JPG, PNG, JPEG</div>
+            </div>
+
+            <div class="d-grid gap-3 d-md-flex justify-content-md-end mt-4">
+              <a href="{% url 'employeeid:bulk_upload' %}" class="btn btn-outline-secondary me-md-2">
+                <i class="fas fa-users me-1"></i> Bulk Upload
+              </a>
+              <button type="submit" class="btn btn-primary px-4">
+                <i class="fas fa-save me-1"></i> Create ID Card
+              </button>
+            </div>
           </form>
         </div>
       </div>
     </div>
   </div>
 </div>
+      if (!form.checkValidity()) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+      form.classList.add('was-validated')
+    }, false)
+  })
+})()
+</script>
 {% endblock %}

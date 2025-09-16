@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>भुगतान रसीद</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5 class="mb-1">किसान: {{ farmer.name }}</h5>
+                        <p class="mb-1">गाँव: {{ farmer.village }}</p>
+                        <p class="mb-0">फोन: {{ farmer.phone }}</p>
+                    </div>
+                    
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                <label for="amount" class="form-label">राशि (₹)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">₹</span>
+                                    <input type="number" step="0.01" class="form-control" id="amount" name="amount" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="payment_date" class="form-label">भुगतान तिथि</label>
+                                <input type="date" class="form-control" id="payment_date" name="payment_date" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="payment_method" class="form-label">भुगतान का तरीका</label>
+                            <select class="form-select" id="payment_method" name="payment_method" required>
+                                <option value="">चुनें...</option>
+                                <option value="cash">नकद</option>
+                                <option value="bank_transfer">बैंक ट्रांसफर</option>
+                                <option value="upi">UPI</option>
+                                <option value="check">चेक</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">नोट्स (वैकल्पिक)</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check-circle me-1"></i> भुगतान दर्ज करें
+                            </button>
+                            <a href="{% url 'farm:farmer_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-times-circle me-1"></i> रद्द करें
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

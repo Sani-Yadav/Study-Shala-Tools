@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Simple Resume Builder - StudyShala{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Basic Resume Builder</h4>
+                    <p class="mb-0">Fill in your basic details to create a simple resume</p>
+                </div>
+                
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Personal Information -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="fas fa-user me-2"></i>Personal Information
+                            </h5>
+                            
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="full_name" class="form-label">Full Name *</label>
+                                    <input type="text" class="form-control" id="full_name" name="full_name" required>
+                                    <div class="invalid-feedback">Please enter your full name.</div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="email" class="form-label">Email *</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="phone" class="form-label">Phone Number *</label>
+                                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                                    <div class="invalid-feedback">Please enter your phone number.</div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="location" class="form-label">Location *</label>
+                                    <input type="text" class="form-control" id="location" name="location" placeholder="City, Country" required>
+                                    <div class="invalid-feedback">Please enter your location.</div>
+                                </div>
+                                
+                                <div class="col-12">
+                                    <label for="profile_image" class="form-label">Profile Photo (Optional)</label>
+                                    <input class="form-control" type="file" id="profile_image" name="profile_image" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Professional Summary -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="fas fa-file-alt me-2"></i>About You
+                            </h5>
+                            <div class="form-group">
+                                <textarea class="form-control" id="summary" name="summary" rows="4" 
+                                          placeholder="Write a brief summary about yourself, your skills, and experience (if any)" required></textarea>
+                                <div class="invalid-feedback">Please write something about yourself.</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            <button type="reset" class="btn btn-outline-secondary me-md-2">
+                                <i class="fas fa-undo me-1"></i>Reset
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-file-pdf me-1"></i>Generate Resume
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <p class="text-muted">Need more sections? <a href="#" id="show-advanced">Show advanced options</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Options (Hidden by default) -->
+<div id="advanced-options" class="container mt-4" style="display: none;">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Advanced Options</h5>
+                </div>
+                <div class="card-body">
+                    <p>For a more detailed resume, you can add the following sections:</p>
+                    <ul>
+                        <li>Work Experience</li>
+                        <li>Education</li>
+                        <li>Skills</li>
+                        <li>Projects</li>
+                        <li>Certifications</li>
+                    </ul>
+                    <p>Contact support to enable these features.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle advanced options
+    const showAdvancedBtn = document.getElementById('show-advanced');
+    const advancedOptions = document.getElementById('advanced-options');
+    
+    if (showAdvancedBtn && advancedOptions) {
+        showAdvancedBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            advancedOptions.style.display = advancedOptions.style.display === 'none' ? 'block' : 'none';
+            this.textContent = advancedOptions.style.display === 'none' ? 'Show advanced options' : 'Hide advanced options';
+        });
+    }
+    
+    // Form validation
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

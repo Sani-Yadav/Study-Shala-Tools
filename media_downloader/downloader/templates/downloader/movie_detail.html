@@ -1,0 +1,294 @@
+{% extends 'downloader/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card border-0 shadow-lg overflow-hidden">
+        <div class="row g-0">
+            <!-- Movie Poster -->
+            <div class="col-lg-4 col-12 bg-dark text-center">
+                {% if movie.poster_url and movie.poster_url != 'N/A' %}
+                    <img src="{{ movie.poster_url }}" 
+                         class="img-fluid h-100 w-100 object-fit-cover" 
+                         alt="{{ movie.title }}"
+                         style="max-height: 700px;">
+                {% else %}
+                    <div class="d-flex flex-column justify-content-center align-items-center h-100 p-4">
+                        <i class="fas fa-image fa-5x text-muted mb-3"></i>
+                        <p class="text-muted">No poster available</p>
+                    </div>
+                {% endif %}
+                <div class="position-absolute bottom-0 start-0 w-100 p-3" style="background: linear-gradient(transparent, rgba(0,0,0,0.8));">
+                    <a href="#" 
+                       class="btn btn-primary btn-lg w-100 py-3 fw-bold"
+                       onclick="alert('Download functionality will be implemented soon!'); return false;">
+                        <i class="fas fa-download me-2"></i> Download Now
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Movie Details -->
+            <div class="col-lg-8 col-12">
+                <div class="p-4 p-md-5">
+                    <!-- Title and Rating -->
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start mb-4">
+                        <div>
+                            <h1 class="display-5 fw-bold mb-2">{{ movie.title }} ({{ movie.year }})</h1>
+                            <div class="d-flex align-items-center flex-wrap gap-3 mb-3">
+                                {% if movie.imdb_rating and movie.imdb_rating != 'N/A' %}
+                                <div class="d-flex align-items-center">
+                                    <div class="position-relative me-2">
+                                        <div class="progress-circle" data-value="{{ movie.imdb_rating|floatformat:0 }}">
+                                            <svg class="progress-circle-chart" viewBox="0 0 36 36">
+                                                <path class="progress-circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                <path class="progress-circle-fill" stroke-dasharray="{{ movie.imdb_rating|floatformat:0 }} 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                <text x="18" y="20.35" class="progress-circle-text">{{ movie.imdb_rating }}</text>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <span class="text-muted">IMDb<br>Rating</span>
+                                </div>
+                                {% endif %}
+                                
+                                {% if movie.metascore and movie.metascore != 'N/A' %}
+                                <div class="vr d-none d-md-block"></div>
+                                <div class="d-flex align-items-center">
+                                    <div class="position-relative me-2">
+                                        <div class="metascore-badge" style="background-color: #66CC33; color: white; font-weight: bold; padding: 5px 10px; border-radius: 4px; font-size: 1.2em;">
+                                            {{ movie.metascore }}
+                                        </div>
+                                    </div>
+                                    <span class="text-muted">Metascore</span>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="vr d-none d-md-block"></div>
+                                <div class="d-flex flex-column">
+                                    {% if movie.released and movie.released != 'N/A' %}
+                                    <span class="text-muted"><i class="far fa-calendar-alt me-1"></i> {{ movie.released }}</span>
+                                    {% endif %}
+                                    <span class="text-muted"><i class="far fa-clock me-1"></i> {{ movie.runtime }} minutes</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 mt-3 mt-md-0">
+                            <button class="btn btn-outline-secondary rounded-circle p-2" title="Add to favorites">
+                                <i class="far fa-heart"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary rounded-circle p-2" title="Add to watchlist">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Genres -->
+                    <div class="mb-4">
+                        {% if movie.genre and movie.genre != 'N/A' %}
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for genre in movie.genre.split "," %}
+                                    <span class="badge bg-primary">{{ genre|title }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Tagline -->
+                    {% if movie.tagline %}
+                        <p class="fst-italic text-muted mb-4">"{{ movie.tagline }}"</p>
+                    {% endif %}
+                    
+                    <!-- Overview -->
+                    <div class="mb-5">
+                        <h3 class="h5 fw-bold mb-3">Overview</h3>
+                        <p class="lead">{{ movie.plot|default:"No plot available." }}</p>
+                    </div>
+                    
+                    <!-- Trailer Section -->
+                    {% if movie.trailer_url %}
+                    <div class="mt-5">
+                        <h3 class="h5 fw-bold mb-3">Watch Trailer</h3>
+                        <div class="ratio ratio-16x9 mb-4">
+                            <iframe 
+                                src="{{ movie.trailer_url|replace:'/watch?v=','/embed/' }}" 
+                                title="{{ movie.title }} Trailer" 
+                                allowfullscreen
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                            </iframe>
+                        </div>
+                        <p class="text-muted small">
+                            <i class="fas fa-external-link-alt me-2"></i>
+                            <a href="{{ movie.trailer_url }}" target="_blank" class="text-decoration-none">
+                                Watch on YouTube
+                            </a>
+                        </p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Additional Info -->
+                    <div class="row g-4">
+                        {% if movie.director and movie.director != 'N/A' %}
+                            <div class="col-md-6">
+                                <h4 class="h6 text-uppercase text-muted mb-3">Director</h4>
+                                <p>{{ movie.director }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        {% if movie.writer and movie.writer != 'N/A' %}
+                            <div class="col-md-6">
+                                <h4 class="h6 text-uppercase text-muted mb-3">Writer</h4>
+                                <p>{{ movie.writer|truncatewords:20 }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        {% if movie.actors and movie.actors != 'N/A' %}
+                            <div class="col-12">
+                                <h4 class="h6 text-uppercase text-muted mb-3">Cast</h4>
+                                <p>{{ movie.actors }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        {% if movie.country and movie.country != 'N/A' %}
+                            <div class="col-md-6">
+                                <h4 class="h6 text-uppercase text-muted mb-3">Country</h4>
+                                <p>{{ movie.country }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        {% if movie.language and movie.language != 'N/A' %}
+                            <div class="col-md-6">
+                                <h4 class="h6 text-uppercase text-muted mb-3">Language</h4>
+                                <p>{{ movie.language }}</p>
+                            </div>
+                        {% endif %}
+                        
+                        {% if movie.awards and movie.awards != 'N/A' %}
+                            <div class="col-12">
+                                <h4 class="h6 text-uppercase text-muted mb-3">Awards</h4>
+                                <p>{{ movie.awards }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if movie.ratings %}
+                    <div class="mt-4">
+                        <h4 class="h6 text-uppercase text-muted mb-3">Ratings</h4>
+                        <div class="row g-3">
+                            {% for rating in movie.ratings %}
+                                <div class="col-md-4">
+                                    <div class="card h-100">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">{{ rating.Source }}</h5>
+                                            <p class="display-6 mb-0">{{ rating.Value }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Additional Info Section -->
+                <div class="bg-light p-4 p-md-5 border-top">
+                    <h4 class="h5 text-uppercase mb-4">Additional Information</h4>
+                    <div class="row">
+                        {% if movie.box_office and movie.box_office != 'N/A' %}
+                        <div class="col-md-4 mb-3">
+                            <h6 class="text-muted">Box Office</h6>
+                            <p class="mb-0">{{ movie.box_office }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if movie.production and movie.production != 'N/A' %}
+                        <div class="col-md-4 mb-3">
+                            <h6 class="text-muted">Production</h6>
+                            <p class="mb-0">{{ movie.production }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if movie.website and movie.website != 'N/A' %}
+                        <div class="col-md-4 mb-3">
+                            <h6 class="text-muted">Website</h6>
+                            <p class="mb-0">
+                                <a href="{{ movie.website }}" target="_blank" rel="noopener noreferrer">
+                                    {{ movie.website|truncatechars:30 }}
+                                </a>
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- IMDb Link -->
+    {% if movie.id %}
+    <div class="mt-4 text-center">
+        <a href="https://www.imdb.com/title/{{ movie.id }}" 
+           target="_blank" 
+           class="btn btn-outline-primary"
+           rel="noopener noreferrer">
+            <i class="fab fa-imdb me-2"></i> View on IMDb
+        </a>
+    </div>
+    {% endif %}
+    
+    <!-- Trailer and Download -->
+    {% if trailer %}
+    <div class="mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">Trailer</h4>
+            <a href="{% url 'media_downloader:download_movie' movie.id %}" class="btn btn-danger">
+                <i class="fas fa-download me-2"></i> Download Movie
+            </a>
+        </div>
+        <div class="ratio ratio-16x9">
+            <iframe src="{{ trailer }}" 
+                    title="{{ movie.title }} Trailer" 
+                    allowfullscreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+            </iframe>
+        </div>
+    </div>
+    {% else %}
+    <div class="mt-5">
+        <a href="{% url 'media_downloader:download_movie' movie.id %}" class="btn btn-danger">
+            <i class="fas fa-download me-2"></i> Download Movie
+        </a>
+    </div>
+    {% endif %}
+    
+    <!-- Similar Movies -->
+    {% if movie.similar.results %}
+    <div class="mt-5">
+        <h4 class="mb-3">Similar Movies</h4>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
+            {% for similar in movie.similar.results|slice:":5" %}
+            <div class="col">
+                <a href="{% url 'media_downloader:movie_detail' similar.id %}" class="text-decoration-none text-dark">
+                    <div class="card h-100">
+                        {% if similar.poster_path %}
+                        <img src="https://image.tmdb.org/t/p/w500{{ similar.poster_path }}" 
+                             class="card-img-top" alt="{{ similar.title }}" 
+                             style="height: 300px; object-fit: cover;">
+                        {% else %}
+                        <div class="bg-light" style="height: 300px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-film fa-3x text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h6 class="card-title">{{ similar.title }}</h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">{{ similar.release_date|slice:":4" }}</small>
+                                <small><i class="fas fa-star text-warning"></i> {{ similar.vote_average|floatformat:1 }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

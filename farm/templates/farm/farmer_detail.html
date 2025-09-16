@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="{% url 'farm:farmer_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> वापस
+        </a>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card shadow-sm border-0 mb-4">
+        <!-- Profile Header -->
+        <div class="profile-header" style="background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); height: 180px; position: relative; border-radius: 0.5rem 0.5rem 0 0;">
+            <div class="position-absolute bottom-0 start-0 end-0 text-center" style="margin-bottom: -50px;">
+                <img src="https://ui-avatars.com/api/?name=राम+कुमार&background=4e73df&color=fff&size=200" 
+                     class="rounded-circle border-4 border-white shadow" 
+                     style="width: 100px; height: 100px; object-fit: cover;">
+            </div>
+        </div>
+
+        <!-- Profile Info -->
+        <div class="card-body pt-5 mt-4 text-center">
+            <h3 class="mb-1 fw-bold">राम कुमार शर्मा</h3>
+            <p class="text-muted">
+                <i class="fas fa-map-marker-alt text-danger me-1"></i> 
+                सूरजपुर, रायपुर, छत्तीसगढ़
+            </p>
+            <div class="d-flex justify-content-center gap-3 mb-4">
+                <a href="tel:+919876543210" class="btn btn-primary px-4">
+                    <i class="fas fa-phone-alt me-2"></i> कॉल करें
+                </a>
+                <a href="#" class="btn btn-outline-secondary px-4">
+                    <i class="fas fa-comment-alt me-2"></i> मैसेज
+                </a>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs nav-fill border-top" id="farmerTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="crop-tab" data-bs-toggle="tab" data-bs-target="#crop" type="button" role="tab">
+                    <i class="fas fa-seedling me-2"></i>फसल विवरण
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">
+                    <i class="fas fa-history me-2"></i>इतिहास
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="documents-tab" data-bs-toggle="tab" data-bs-target="#documents" type="button" role="tab">
+                    <i class="fas fa-file-alt me-2"></i>दस्तावेज़
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content p-4">
+            <!-- Crop Details Tab -->
+            <div class="tab-pane fade show active" id="crop" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="bg-soft-success p-3 rounded-circle me-3">
+                                        <i class="fas fa-seedling text-success" style="font-size: 1.5rem;"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0 fw-bold">धान (बासमती)</h5>
+                                        <span class="badge bg-success bg-opacity-10 text-success">सक्रिय</span>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-6">
+                                        <div class="p-3 bg-light rounded-3">
+                                            <div class="text-muted small mb-1">बोवाई तिथि</div>
+                                            <div class="fw-bold">15 जुलाई 2023</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 bg-light rounded-3">
+                                            <div class="text-muted small mb-1">कटाई तिथि</div>
+                                            <div class="fw-bold">15 नवंबर 2023</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 bg-light rounded-3">
+                                            <div class="text-muted small mb-1">क्षेत्रफल</div>
+                                            <div class="fw-bold">2.5 एकड़</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="p-3 bg-light rounded-3">
+                                            <div class="text-muted small mb-1">अनुमानित उत्पादन</div>
+                                            <div class="fw-bold">25 क्विंटल</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="fw-medium">फसल प्रगति</span>
+                                        <span class="fw-bold text-primary">65%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: 65%;"></div>
+                                    </div>
+                                    <div class="d-flex justify-content-between mt-2">
+                                        <small class="text-muted">बोवाई</small>
+                                        <small class="text-muted">कटाई</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- Weather Card -->
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-cloud-sun text-info me-2"></i>मौसम अपडेट
+                                    </h5>
+                                    <div class="text-end">
+                                        <div class="fw-bold">28°C</div>
+                                        <small class="text-muted">साफ आसमान</small>
+                                    </div>
+                                </div>
+
+                                <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <div>
+                                        <strong>मौसम चेतावनी</strong>
+                                        <div class="small">कल भारी बारिश (80%) की संभावना</div>
+                                    </div>
+                                </div>
+
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="p-2">
+                                            <div class="text-muted small mb-1">
+                                                <i class="fas fa-wind"></i> हवा
+                                            </div>
+                                            <div class="fw-bold">12 km/h</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-2">
+                                            <div class="text-muted small mb-1">
+                                                <i class="fas fa-tint"></i> नमी
+                                            </div>
+                                            <div class="fw-bold">65%</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-2">
+                                            <div class="text-muted small mb-1">
+                                                <i class="fas fa-cloud-rain"></i> बारिश
+                                            </div>
+                                            <div class="fw-bold">10%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body">
+                                <h5 class="mb-3">
+                                    <i class="fas fa-bolt text-warning me-2"></i>त्वरित कार्रवाई
+                                </h5>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-outline-primary text-start">
+                                        <i class="fas fa-edit me-2"></i> फसल विवरण अपडेट करें
+                                    </button>
+                                    <button class="btn btn-outline-success text-start">
+                                        <i class="fas fa-rupee-sign me-2"></i> भुगतान रिकॉर्ड जोड़ें
+                                    </button>
+                                    <button class="btn btn-outline-info text-start">
+                                        <i class="fas fa-camera me-2"></i> फोटो जोड़ें
+                                    </button>
+                                    <button class="btn btn-outline-danger text-start">
+                                        <i class="fas fa-trash-alt me-2"></i> रिकॉर्ड हटाएं
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div class="tab-pane fade" id="history" role="tabpanel">
+                <div class="text-center py-5">
+                    <i class="fas fa-history text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                    <h5 class="text-muted">कोई पिछला रिकॉर्ड उपलब्ध नहीं है</h5>
+                    <p class="text-muted small">यहां पिछली गतिविधियां और रिकॉर्ड दिखाई देंगे</p>
+                </div>
+            </div>
+
+            <!-- Documents Tab -->
+            <div class="tab-pane fade" id="documents" role="tabpanel">
+                <div class="text-center py-5">
+                    <i class="fas fa-folder-open text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
+                    <h5 class="text-muted">कोई दस्तावेज़ अपलोड नहीं किया गया</h5>
+                    <p class="text-muted small">यहां अपने दस्तावेज़ अपलोड और प्रबंधित करें</p>
+                    <button class="btn btn-primary mt-2">
+                        <i class="fas fa-upload me-2"></i>दस्तावेज़ अपलोड करें
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-header {
+        background-size: cover;
+        background-position: center;
+    }
+    .nav-tabs .nav-link {
+        color: #6c757d;
+        font-weight: 500;
+        padding: 1rem;
+    }
+    .nav-tabs .nav-link.active {
+        color: #4e73df;
+        border-bottom: 3px solid #4e73df;
+        font-weight: 600;
+    }
+    .card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+    }
+    .btn {
+        border-radius: 0.375rem;
+    }
+</style>
+{% endblock %}

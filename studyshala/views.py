@@ -1,29 +1,29 @@
-from django.shortcuts import render
-from notes.models import Note
-from django.contrib.auth import get_user_model
-from employeeid.models import Employee
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 def home(request):
-    # Get the custom user model
-    User = get_user_model()
-    
-    # Get some statistics for the home page
-    notes_count = Note.objects.count()
-    users_count = User.objects.count()
-    
-    # Get recent notes
-    recent_notes = Note.objects.all().order_by('-uploaded_at')[:6]
-    
-    # Get the first employee for preview
-    try:
-        employee = Employee.objects.first()
-    except:
-        employee = None
-    
-    context = {
-        'notes_count': notes_count,
-        'users_count': users_count,
-        'recent_notes': recent_notes,
-        'employee': employee,
-    }
-    return render(request, 'home.html', context)
+    # Always show the home page to all users
+    return render(request, 'home.html')
+
+def signup(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Log the user in
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            messages.success(request, 'Registration successful! You are now logged in.')
+            return redirect('home')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/signup.html', {'form': form})

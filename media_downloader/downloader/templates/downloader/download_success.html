@@ -1,0 +1,54 @@
+{% extends 'downloader/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle text-success" style="font-size: 5rem;"></i>
+                    </div>
+                    <h1 class="display-5 fw-bold text-success mb-4">Download Successful!</h1>
+                    
+                    {% if movie_title %}
+                    <h3 class="mb-4">{{ movie_title }}</h3>
+                    {% endif %}
+                    
+                    <div class="alert alert-success" role="alert">
+                        <h5 class="alert-heading">File Download</h5>
+                        <p class="mb-0">Aapka file download ke liye taiyaar hai.</p>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">File Details</h5>
+                            <p class="card-text">
+                                <strong>File Name:</strong> {{ filename }}<br>
+                                <strong>Size:</strong> {{ file_size|filesizeformat }}
+                            </p>
+                            <a href="{{ download_url }}" class="btn btn-primary btn-lg" download>
+                                <i class="fas fa-download me-2"></i> Download Now
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <p>Download shuru nahi hua? Neele link par right-click karke "Save link as..." par click karein.</p>
+                        <a href="{{ download_url }}" class="text-primary" download>{{ filename }}</a>
+                    </div>
+                    
+                    <div class="mt-5">
+                        <a href="{% url 'media_downloader:home' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-2"></i> Home Page
+                        </a>
+                        <a href="{% url 'media_downloader:search_movies' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-search me-2"></i> Search More Movies
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

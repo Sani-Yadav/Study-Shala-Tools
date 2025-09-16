@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}किसान विवरण - {{ farmer.name }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --primary-color: #2e7d32;
+        --secondary-color: #388e3c;
+        --accent-color: #8bc34a;
+        --warning-color: #ffa000;
+        --danger-color: #d32f2f;
+        --light-bg: #f1f8e9;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --border-radius: 12px;
+    }
+    
+    body {
+        background-color: #f5f5f5;
+        font-family: 'Hind Siliguri', sans-serif;
+        color: #2e2e2e;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+        color: white;
+        padding: 2.5rem 0;
+        margin: -1.5rem -1.5rem 2.5rem -1.5rem;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .farmer-avatar {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border: 4px solid white;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .detail-card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        margin-bottom: 1.5rem;
+        background: white;
+    }
+
+    .detail-card .card-header {
+        background: white;
+        border-bottom: 2px solid #f0f0f0;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    .info-item {
+        display: flex;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .info-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        flex-shrink: 0;
+    }
+
+    .btn-action {
+        border-radius: 50px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        margin: 0.25rem;
+        min-width: 140px;
+    }
+
+    .crop-progress {
+        height: 8px;
+        border-radius: 4px;
+        background: #e9ecef;
+        margin: 0.5rem 0;
+    }
+
+    .crop-progress-bar {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 100%);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Back Button -->
+    <div class="mb-4">
+        <a href="{% url 'farm:farmer_list' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i> वापस सूची पर जाएं
+        </a>
+    </div>
+
+    <!-- Farmer Profile Header -->
+    <div class="card detail-card">
+        <div class="card-body text-center py-4">
+            <div class="position-relative d-inline-block mb-3">
+                <img src="https://ui-avatars.com/api/?name={{ farmer.name|urlencode }}&background=4e73df&color=fff&size=200" 
+                     class="rounded-circle farmer-avatar" 
+                     alt="{{ farmer.name }}">
+                <span class="position-absolute bottom-0 end-0 bg-success rounded-circle p-2" style="border: 3px solid white;">
+                    <i class="fas fa-check text-white"></i>
+                </span>
+            </div>
+            <h2 class="mb-1">{{ farmer.name }}</h2>
+            <p class="text-muted mb-3">
+                <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                {{ farmer.village }}, {{ farmer.district }}, {{ farmer.state }}
+            </p>
+            <div class="d-flex flex-wrap justify-content-center gap-2 mb-3">
+                <a href="tel:{{ farmer.phone }}" class="btn btn-outline-primary btn-action">
+                    <i class="fas fa-phone-alt me-2"></i> कॉल करें
+                </a>
+                <a href="https://wa.me/{{ farmer.phone }}" class="btn btn-outline-success btn-action">
+                    <i class="fab fa-whatsapp me-2"></i> व्हाट्सएप
+                </a>
+                <a href="#" class="btn btn-outline-info btn-action">
+                    <i class="fas fa-envelope me-2"></i> संदेश
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Personal Information -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="detail-card">
+                <div class="card-header bg-white">
+                    <i class="fas fa-id-card me-2"></i> व्यक्तिगत जानकारी
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <div class="info-icon bg-soft-primary">
+                            <i class="fas fa-phone text-primary"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">फोन नंबर</h6>
+                            <p class="mb-0 text-muted">{{ farmer.phone }}</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon bg-soft-success">
+                            <i class="fas fa-calendar-alt text-success"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">जन्म तिथि</h6>
+                            <p class="mb-0 text-muted">{{ farmer.date_of_birth|date:"d/m/Y" }}</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon bg-soft-warning">
+                            <i class="fas fa-mars text-warning"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">लिंग</h6>
+                            <p class="mb-0 text-muted">{{ farmer.get_gender_display }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="detail-card">
+                <div class="card-header bg-white">
+                    <i class="fas fa-map-marker-alt me-2"></i> पता विवरण
+                </div>
+                <div class="card-body">
+                    <div class="info-item">
+                        <div class="info-icon bg-soft-info">
+                            <i class="fas fa-home text-info"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">गाँव</h6>
+                            <p class="mb-0 text-muted">{{ farmer.village }}</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon bg-soft-secondary">
+                            <i class="fas fa-map-marker-alt text-secondary"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">जिला</h6>
+                            <p class="mb-0 text-muted">{{ farmer.district }}</p>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon bg-soft-danger">
+                            <i class="fas fa-flag text-danger"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0">राज्य</h6>
+                            <p class="mb-0 text-muted">{{ farmer.state }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Crop Information -->
+    <div class="detail-card">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-seedling me-2"></i> फसल विवरण</span>
+            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#cropDetails">
+                <i class="fas fa-chevron-down me-1"></i> टॉगल करें
+            </button>
+        </div>
+        <div class="collapse show" id="cropDetails">
+            <div class="card-body">
+                {% if farmer.crops.all %}
+                    {% for crop in farmer.crops.all %}
+                    <div class="crop-item p-3 mb-3 border rounded">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="mb-0">{{ crop.get_crop_type_display }}</h5>
+                            <span class="badge bg-{{ crop.get_status_color }}">{{ crop.get_status_display }}</span>
+                        </div>
+                        <div class="crop-progress">
+                            <div class="crop-progress-bar" style="width: {{ crop.progress_percentage }}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small mt-2">
+                            <span>लगाई गई: {{ crop.planting_date|date:"d/m/Y" }}</span>
+                            <span>अनुमानित कटाई: {{ crop.harvest_date|date:"d/m/Y" }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-info-circle fa-2x text-muted mb-3"></i>
+                        <p class="mb-0">कोई फसल विवरण उपलब्ध नहीं है</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="#" class="btn btn-primary">
+            <i class="fas fa-edit me-2"></i> संपादित करें
+        </a>
+        <a href="#" class="btn btn-outline-secondary">
+            <i class="fas fa-print me-2"></i> प्रिंट करें
+        </a>
+        <a href="#" class="btn btn-outline-danger ms-auto">
+            <i class="fas fa-trash-alt me-2"></i> हटाएं
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+</script>
+{% endblock %}

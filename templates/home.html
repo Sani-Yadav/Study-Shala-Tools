@@ -1,120 +1,379 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}StudyShala - Your Learning Platform{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
+<style>
+.feature-card {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+.feature-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 30px;
+}
+.hero-section {
+    padding: 100px 0;
+    background: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
+    color: white;
+    border-radius: 0 0 20px 20px;
+    margin-bottom: 50px;
+}
+.btn-custom {
+    padding: 10px 25px;
+    border-radius: 30px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container text-center" style="margin-top: 60px;">
-  
-  <h1 class="mb-4">Welcome to StudyShala</h1>
-  <div class="d-flex justify-content-center gap-3 flex-wrap">
-    <a href="{% url 'scanner:scan_note' %}" class="btn btn-primary btn-lg" style="padding: 15px 40px; font-size: 1.5rem; border-radius: 8px;">
-      📄 Scan Notes (OCR to PDF)
-    </a>
-    {% if user.is_authenticated %}
-      <a href="{% url 'resume:builder' %}" class="btn btn-success btn-lg" style="padding: 15px 40px; font-size: 1.5rem; border-radius: 8px;">
-        📝 Resume Builder
-      </a>
-    {% else %}
-      <a href="{% url 'accounts:login' %}?next={% url 'resume:builder' %}" class="btn btn-outline-success btn-lg" style="padding: 15px 40px; font-size: 1.5rem; border-radius: 8px;">
-        🔒 Login for Resume Builder
-      </a>
-    {% endif %}
-  </div>
-</div>
-
-<!-- Employee ID Card Preview Section -->
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <div class="card shadow" style="border-radius: 16px; overflow: hidden;">
-        <div class="card-header bg-dark text-white text-center" style="padding: 10px 0;">
-          <h4 class="mb-0" style="letter-spacing: 1px;">Employee ID Card</h4>
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 text-lg-start text-center mb-5 mb-lg-0">
+        <h1 class="display-4 fw-bold mb-4">All-in-One Toolbox</h1>
+        <p class="lead mb-4">Everything you need for academic and professional success in one place. Generate ID cards, build resumes, track attendance, and much more!</p>
+        <div class="d-flex gap-3 justify-content-lg-start justify-content-center flex-wrap">
+          <a href="{% url 'scanner:scan_note' %}" class="btn btn-light btn-custom">
+            <i class="fas fa-file-pdf me-2"></i> Scan Notes
+          </a>
+          <a href="{% url 'resume:builder' %}" class="btn btn-outline-light btn-custom">
+            <i class="fas fa-file-alt me-2"></i> Resume Builder
+          </a>
         </div>
-        <div class="card-body" style="background: #f8fafc;">
-          {% if employee %}
-          <div class="row g-2 align-items-center">
-            <div class="col-4 text-center">
-              {% if employee.profile_image %}
-                <img src="{{ employee.profile_image.url }}" alt="{{ employee.full_name|default:'Employee' }}'s profile" class="img-fluid rounded border mb-2" style="max-height: 90px; object-fit: cover;">
-              {% else %}
-                <div class="bg-light rounded p-3 text-center">
-                  <i class="fas fa-user fa-2x text-secondary"></i>
-                </div>
-              {% endif %}
-              {% if employee.qr_code %}
-                <img src="{{ employee.qr_code.url }}" alt="QR Code" class="img-fluid mt-2" style="max-width: 60px;">
-              {% endif %}
-            </div>
-            <div class="col-8">
-              <table class="table table-sm table-bordered mb-0" style="font-size: 13px;">
-                <tr><th>Name</th><td>{{ employee.full_name }}</td></tr>
-                <tr><th>ID</th><td>{{ employee.employee_id }}</td></tr>
-                <tr><th>Designation</th><td>{{ employee.designation }}</td></tr>
-                <tr><th>Department</th><td>{{ employee.department }}</td></tr>
-                <tr><th>Company</th><td>{{ employee.company }}</td></tr>
-              </table>
-              <div class="mt-2 text-end">
+      </div>
 
-                <a href="{% url 'employeeid:employee_card' employee.pk %}" class="btn btn-outline-primary btn-sm me-2">View Full Card</a>
-                <a href="{% url 'employeeid:update_employee' employee.pk %}" class="btn btn-outline-warning btn-sm">Update</a>
-              </div>
+      <div class="col-lg-6">
+        <div class="text-center">
+          <img src="https://edure.in/wp-content/uploads/2025/02/ai-tools.webp" 
+               alt="StudyShala Features" 
+               class="img-fluid"
+               style="max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+        </div>
+     
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center section-title">Our Tools</h2>
+    <div class="row g-4">
+      <!-- QR Feedback -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd;">
+              <i class="fas fa-comment-alt"></i>
             </div>
+            <h4 class="mb-3">QR Feedback</h4>
+            <p class="text-muted mb-4">Collect instant feedback from users using QR codes. Easy to create and manage feedback forms.</p>
+            <a href="/feedback/" class="btn btn-outline-primary">Create Feedback</a>
           </div>
-          {% else %}
-            <div class="text-center">
+        </div>
+      </div>
 
-              <a href="{% url 'employeeid:upload_employee' %}" class="btn btn-primary">Create Employee Card</a>
+      <!-- Political ID Card Generator -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+              <i class="fas fa-landmark"></i>
             </div>
-          {% endif %}
+            <h4 class="mb-3">Political ID Card</h4>
+            <p class="text-muted mb-4">Create professional political ID cards with QR code verification for party members.</p>
+            <a href="{% url 'id_card_app:create_id_card' %}" class="btn btn-outline-danger">Create ID Card</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- ID Card Generator -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd;">
+              <i class="fas fa-id-card"></i>
+            </div>
+            <h4 class="mb-3">ID Card Generator</h4>
+            <p class="text-muted mb-4">Create professional ID cards for students and employees with photos and details.</p>
+            <a href="{% url 'idcard:create_id_card' %}" class="btn btn-outline-primary">Generate ID Card</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resume Builder -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">
+              <i class="fas fa-file-invoice"></i>
+            </div>
+            <h4 class="mb-3">Resume Builder</h4>
+            <p class="text-muted mb-4">Create professional resumes in minutes with our easy-to-use resume builder tool.</p>
+            <a href="{% url 'resume:builder' %}" class="btn btn-outline-success">Build Resume</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Satellite Tracker -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(111, 66, 193, 0.1); color: #6f42c1;">
+              <i class="fas fa-satellite"></i>
+            </div>
+            <h4 class="mb-3">Satellite Tracker</h4>
+            <p class="text-muted mb-4">Track satellites in real-time and view their trajectories and positions.</p>
+            <a href="/satellite-tracker/" class="btn btn-outline-purple">Track Now</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Farming Assistant -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(25, 135, 84, 0.1); color: #198754;">
+              <i class="fas fa-tractor"></i>
+            </div>
+            <h4 class="mb-3">Farming Assistant</h4>
+            <p class="text-muted mb-4">Get weather updates, crop information, and farming tips for better agriculture.</p>
+            <a href="/farm/" class="btn btn-outline-success">Explore</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ticket Booking -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+              <i class="fas fa-ticket-alt"></i>
+            </div>
+            <h4 class="mb-3">Ticket Booking</h4>
+            <p class="text-muted mb-4">Book tickets for movies, buses, trains, and flights all in one place.</p>
+            <a href="{% url 'ticket_booking:home' %}" class="btn btn-outline-warning">Book Now</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Media Post Generator -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(13, 202, 240, 0.1); color: #0dcaf0;">
+              <i class="fas fa-share-alt"></i>
+            </div>
+            <h4 class="mb-3">Social Media Post Generator</h4>
+            <p class="text-muted mb-4">Create engaging social media posts with our easy-to-use design tool.</p>
+            <a href="/social-post/" class="btn btn-outline-info">Create Post</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- QR Attendance -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(23, 162, 184, 0.1); color: #17a2b8;">
+              <i class="fas fa-qrcode"></i>
+            </div>
+            <h4 class="mb-3">QR Attendance</h4>
+            <p class="text-muted mb-4">Track attendance easily using QR codes. Generate and scan QR codes for quick check-ins.</p>
+            <a href="{% url 'attendance:generate_qr' %}" class="btn btn-outline-info">Generate QR Code</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Media Downloader -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+              <i class="fas fa-download"></i>
+            </div>
+            <h4 class="mb-3">Media Downloader</h4>
+            <p class="text-muted mb-4">Download videos and audio from various platforms with our easy downloader.</p>
+            <a href="/media-downloader/" class="btn btn-outline-danger">Download Now</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ticket Booking Card -->
+      <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+              <i class="fas fa-ticket-alt"></i>
+            </div>
+            <h4 class="mb-3">Tickets Booking</h4>
+            <p class="text-muted mb-4">Easily book movie, bus, train, and flight tickets.</p>
+            <a href="{% url 'ticket_booking:home' %}" class="btn btn-outline-warning">Now Booking Tickets</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Weather Card -->
+      <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
+              <i class="fas fa-cloud-sun"></i>
+            </div>
+            <h4 class="mb-3">मौसम जानकारी</h4>
+            <p class="text-muted mb-4">अपने क्षेत्र का वर्तमान मौसम और पूर्वानुमान देखें। किसानों के लिए उपयोगी जानकारी।</p>
+            <a href="/farm/weather/" class="btn btn-outline-warning">मौसम देखें</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Document Scanner -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd;">
+              <i class="fas fa-file-alt"></i>
+            </div>
+            <h4 class="mb-3">Document Scanner</h4>
+            <p class="text-muted mb-4">Scan and digitize your documents with our advanced scanning technology.</p>
+            <a href="{% url 'scanner:scan_note' %}" class="btn btn-outline-primary">Scan Now</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sarkari Sahyogi -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
+              <i class="fas fa-file-contract"></i>
+            </div>
+            <h4 class="mb-3">Sarkari Sahyogi</h4>
+            <p class="text-muted mb-4">Find and apply for government jobs and schemes with our comprehensive portal.</p>
+            <a href="{% url 'sarkarisahyogi:dashboard' %}" class="btn btn-outline-danger">Explore Jobs</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Health Assistance -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(25, 135, 84, 0.1); color: #198754;">
+              <i class="fas fa-heartbeat"></i>
+            </div>
+            <h4 class="mb-3">Health Assistance</h4>
+            <p class="text-muted mb-4">Access emergency contacts, nearby hospitals, and health resources when needed.</p>
+            <a href="{% url 'health_assist:health_home' %}" class="btn btn-outline-success">Get Health Info</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Employee ID Card -->
+      <div class="col-md-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(25, 135, 84, 0.1); color: #198754;">
+              <i class="fas fa-id-card"></i>
+            </div>
+            <h4 class="mb-3">Employee ID Card</h4>
+            <p class="text-muted mb-4">Create and manage professional employee ID cards with photos and QR codes.</p>
+            <a href="{% url 'employeeid:create_employee_card' %}" class="btn btn-outline-success">Create Employee ID</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Farmer Assistant Card -->
+      <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(255, 152, 0, 0.1); color: #ff9800;">
+              <i class="fas fa-tractor"></i>
+            </div>
+            <h4 class="mb-3">Farmer Assistant</h4>
+            <p class="text-muted mb-4">Manage farmer details, crops, and agricultural information efficiently.</p>
+            <a href="{% url 'farm:farmer_list' %}" class="btn btn-outline-warning">Manage Farmers</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Media Downloader Card -->
+      <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd;">
+              <i class="fas fa-download"></i>
+            </div>
+            <h4 class="mb-3">Media Downloader</h4>
+            <p class="text-muted mb-4">Download videos and images from YouTube, Instagram, Twitter, Facebook, and 1000+ other sites.</p>
+            <a href="/media-downloader/" class="btn btn-outline-primary">
+              <i class="fas fa-external-link-alt me-1"></i> Open Media Downloader
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Satellite Tracker Card -->
+      <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(111, 66, 193, 0.1); color: #6f42c1;">
+              <i class="fas fa-satellite"></i>
+            </div>
+            <h4 class="mb-3">Satellite Tracker</h4>
+            <p class="text-muted mb-4">Track real-time positions of satellites and get detailed orbital information.</p>
+            <a href="{% url 'satellite_tracker:index' %}" class="btn btn-outline-primary">
+              <i class="fas fa-satellite-dish me-1"></i> Track Satellites
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Media Post Generator Card -->
+      <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+          <div class="card-body text-center p-4">
+            <div class="feature-icon mx-auto" style="background: rgba(13, 202, 240, 0.1); color: #0dcaf0;">
+              <i class="fas fa-share-alt"></i>
+            </div>
+            <h4 class="mb-3">Social Media Post Generator</h4>
+            <p class="text-muted mb-4">Create engaging social media posts with custom designs and content for all platforms.</p>
+            <a href="{% url 'home' %}" class="btn btn-outline-info">
+              <i class="fas fa-plus-circle me-1"></i> Create Post
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </div>
+</section>
+
+
+    
+  </section>
+</div>
 </div>
 
-<!-- Notes Section -->
-<div class="container mt-5">
-  <h2 class="text-center mb-4">Recent Notes</h2>
-  {% if recent_notes %}
-    <div class="row justify-content-center">
-      {% for note in recent_notes %}
-        <div class="col-md-4 mb-4">
-          <div class="card feature-card h-100 shadow-sm">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{ note.title|default:'Untitled Note' }}</h5>
-              <p class="card-text flex-grow-1">
-                {% if note.description %}
-                  {{ note.description|truncatewords:20 }}
-                {% else %}
-                  <span class="text-muted">No description available</span>
-                {% endif %}
-              </p>
-              <div class="mt-auto">
-                <a href="{% url 'notes:note_detail' note.id %}" class="btn btn-outline-primary w-100">View Note</a>
-              </div>
-            </div>
-            <div class="card-footer bg-transparent">
-              <small class="text-muted">
-                {{ note.uploaded_by.get_full_name|default:note.uploaded_by.username }} • {{ note.uploaded_at|timesince }} ago
-              </small>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-    <div class="text-center mt-3">
-
-<a href="{% url 'notes:notes_list' %}" class="btn btn-outline-secondary">View All Notes</a>es</a>
-    </div>
-  {% else %}
-    <div class="alert alert-info text-center">
-      No notes available yet. 
-      {% if user.is_authenticated %}
-        <a href="{% url 'notes:upload_note' %}" class="alert-link">Upload the first note!</a>
-      {% else %}
-        <a href="{% url 'accounts:login' %}?next={% url 'notes:upload_note' %}" class="alert-link">Login to upload notes</a>
-      {% endif %}
-    </div>
-  {% endif %}
-</div>
 {% endblock %}

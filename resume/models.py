@@ -9,9 +9,11 @@ class Resume(models.Model):
     #  Personal Info
     profile_image = models.ImageField(upload_to='resumes/profile_images/', blank=True, null=True)
     full_name = models.CharField(max_length=100,blank=True, null=True)
+    job_title = models.CharField(max_length=100, blank=True, null=True, verbose_name='Job Title/Position')
     email = models.EmailField(blank=True, null=True)
     phone = models.CharField(max_length=20,blank=True, null=True)
-    location = models.CharField(max_length=100, blank=True, null=True)
+    address = models.TextField(blank=True, null=True, help_text='Your full address')
+    location = models.CharField(max_length=100, blank=True, null=True, help_text='City, Country')
     linkedin = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
     portfolio_url = models.URLField(blank=True, null=True)

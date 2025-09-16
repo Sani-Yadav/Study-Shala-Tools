@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Apply Job | SarkariSahyogi</title>
+</head>
+<body>
+    <h2>Apply for Sarkari Naukri</h2>
+    
+    <h3>Profile Info:</h3>
+    <p><strong>Name:</strong> {{ profile.full_name }}</p>
+    <p><strong>DOB:</strong> {{ profile.dob }}</p>
+    <p><strong>Address:</strong> {{ profile.address }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit Application</button>
+    </form>
+</body>
+</html>

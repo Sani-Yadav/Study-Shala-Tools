@@ -1,0 +1,62 @@
+<h2>Select Your Seat</h2>
+<div id="seats">
+  {% for seat in total_seats %}
+    {% if seat in booked_seats %}
+      <div class="seat booked">{{ seat }}</div>
+    {% else %}
+      <div class="seat available" onclick="selectSeat(this)">{{ seat }}</div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<p>Selected Seats: <span id="selected"></span></p>
+<button onclick="confirmSeats()">Confirm</button>
+
+<style>
+  #seats { display: flex; flex-wrap: wrap; width: 200px; }
+  .seat { width: 40px; height: 40px; margin: 5px; text-align: center; line-height: 40px; cursor: pointer; border: 1px solid #333; }
+  .booked { background: red; cursor: not-allowed; }
+  .available { background: lightgreen; }
+  .selected { background: orange; }
+</style>
+
+<script>
+let selectedSeats = [];
+
+function selectSeat(ele){
+  let seatNum = ele.innerText;
+  if(selectedSeats.includes(seatNum)){
+    selectedSeats = selectedSeats.filter(s => s !== seatNum);
+    ele.classList.remove("selected");
+  } else {
+    selectedSeats.push(seatNum);
+    ele.classList.add("selected");
+  }
+  document.getElementById("selected").innerText = selectedSeats.join(", ");
+}
+
+function confirmSeats(){
+  if(selectedSeats.length == 0){
+    alert("Please select at least one seat!");
+    return;
+  }
+  // Send selected seats to backend
+  fetch("{% url 'confirm_seats' bus_train.id %}", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": "{{ csrf_token }}"
+    },
+    body: JSON.stringify({seats: selectedSeats})
+  })
+  .then(response => response.json())
+  .then(data => {
+    if(data.status == "success"){
+      alert("Booking Confirmed!");
+      window.location.href = "/"; // redirect to home or confirmation page
+    } else {
+      alert(data.message);
+    }
+  });
+}
+</script>

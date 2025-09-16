@@ -11,6 +11,23 @@ from datetime import datetime
 from django.db import transaction
 from django.core.exceptions import ValidationError
 
+def idcard_management(request):
+    """View for the ID Card Management page"""
+    # Get ID cards for the current user (if logged in)
+    if request.user.is_authenticated:
+        id_cards = IDCard.objects.filter(user=request.user).order_by('-issue_date')
+    else:
+        # For anonymous users, show an empty queryset
+        id_cards = IDCard.objects.none()
+    
+    context = {
+        'id_cards': id_cards,
+        'active_tab': 'idcard_management',
+        'user_authenticated': request.user.is_authenticated,
+    }
+    return render(request, 'idcard/idcard_management_new.html', context)
+
+
 def id_card_view(request):
     """View to display ID cards for the current user"""
     if not request.user.is_authenticated:
@@ -23,30 +40,38 @@ def id_card_view(request):
 
 def create_id_card(request):
     """View to create a new ID card"""
+    # Allow both authenticated and anonymous users to create ID cards
+
     if request.method == 'POST':
         form = IDCardForm(request.POST, request.FILES)
         if form.is_valid():
-            id_card = form.save(commit=False)
-            id_card.user = request.user
-            
-            # Generate a unique Student ID in format: STU-{YEAR}-{COURSE_CODE}-{UNIQUE_ID}
-            if not id_card.student_id:
-                # Get current year
-                current_year = datetime.now().year
-                # Get first 2 letters of course (or 'CS' if not available)
-                course_code = (id_card.course[:2].upper() if id_card.course else 'CS')
-                # Generate unique ID
-                unique_id = uuid.uuid4().hex[:8].upper()
-                # Create the formatted Student ID
-                id_card.student_id = f"STU-{current_year}-{course_code}-{unique_id}"
-            
             try:
+                id_card = form.save(commit=False)
+                # For anonymous users, set user to None
+                if request.user.is_authenticated:
+                    id_card.user = request.user
+                else:
+                    id_card.user = None
+                
+                # Generate a unique Student ID in format: STU-{YEAR}-{COURSE_CODE}-{UNIQUE_ID}
+                if not id_card.student_id:
+                    # Get current year
+                    current_year = datetime.now().year
+                    # Get first 2 letters of course (or 'CS' if not available)
+                    course_code = (id_card.course[:2].upper() if id_card.course else 'CS')
+                    # Generate unique ID
+                    unique_id = uuid.uuid4().hex[:8].upper()
+                    # Create the formatted Student ID
+                    id_card.student_id = f"STU-{current_year}-{course_code}-{unique_id}"
+                
                 id_card.save()
                 messages.success(request, 'Your ID card has been created successfully!')
                 return redirect('idcard:id_card_view')
+                
             except Exception as e:
                 messages.error(request, f'Error creating ID card: {str(e)}')
-                return redirect('idcard:create_id_card')
+                # Return the form with errors and previously entered data
+                return render(request, 'idcard/create_card.html', {'form': form})
     else:
         # Initialize form without pre-filling student_id (it will be generated on save)
         form = IDCardForm()

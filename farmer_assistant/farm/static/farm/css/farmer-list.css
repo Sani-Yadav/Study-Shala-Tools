@@ -1,0 +1,332 @@
+/* Farmer List Page Specific Styles */
+
+:root {
+    --primary: #2ecc71;
+    --primary-dark: #27ae60;
+    --secondary: #27ae60;
+    --accent: #e74c3c;
+    --text-color: #2c3e50;
+    --light-bg: #f8f9fa;
+    --card-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    --border-radius: 0.5rem;
+    --border-color: #e9ecef;
+    --transition: all 0.3s ease;
+}
+
+/* Table Styles */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    color: #212529;
+    border-collapse: collapse;
+}
+
+.table th {
+    font-weight: 600;
+    text-align: left;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Card Styles */
+.weather-card {
+    border: none;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.weather-header {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    padding: 1rem 1.25rem;
+}
+
+.weather-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 0.35em 0.65em;
+    font-size: 0.75em;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+}
+
+.badge-success {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.badge-warning {
+    background-color: #f39c12;
+    color: white;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Table Hover Effects */
+.table-hover tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Avatar Styles */
+.avatar-title {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+/* Weather Widget */
+.weather-widget {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.weather-widget i {
+    font-size: 1.25rem;
+}
+
+.weather-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 1.2;
+}
+
+/* Card Styles */
+.card {
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    margin-bottom: 0;
+}
+
+/* Table Header Styles */
+.table thead th {
+    border-top: none;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    padding: 1rem 1.5rem;
+}
+
+/* Table Cell Styles */
+.table tbody td {
+    padding: 1.25rem 1.5rem;
+    vertical-align: middle;
+    border-color: var(--light-bg);
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Avatar Styles */
+.avatar-sm {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    color: #6c757d;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+/* Badge Styles */
+.badge-farms {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    padding: 0.35em 0.65em;
+    border-radius: 50rem;
+    font-size: 0.75em;
+    font-weight: 500;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem 0;
+}
+
+/* Page Header */
+.page-header {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    border-radius: 0 0 20px 20px;
+    box-shadow: var(--card-shadow);
+}
+
+.page-title {
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+.page-subtitle {
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+    margin-bottom: 1.5rem;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: white;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    font-weight: 600;
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .page-header {
+        padding: 2rem 0;
+        text-align: center;
+    }
+
+    .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1.5rem;
+        width: 45%;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-color);
+    }
+    .table-responsive {
+        border: 0;
+    }
+    
+    .table thead {
+        display: none;
+    }
+    
+    .table, .table tbody, .table tr, .table td {
+        display: block;
+        width: 100%;
+    }
+    
+    .table tr {
+        margin-bottom: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+    }
+    
+    .table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+    
+    .table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        width: 50%;
+        padding-right: 1rem;
+        text-align: left;
+        font-weight: 600;
+    }
+}
+
+/* Loading Spinner */
+.spinner-border {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    vertical-align: text-bottom;
+    border: 0.2em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+    to { transform: rotate(360deg); }
+}
+
+/* Toast Notifications */
+#toast-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1100;
+}
+
+.toast {
+    margin-bottom: 0.5rem;
+    opacity: 1;
+}
+
+/* No Farmers Message */
+.no-farmers {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.no-farmers i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #dee2e6;
+}

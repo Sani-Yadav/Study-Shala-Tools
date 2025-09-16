@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Social Media Post Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f6fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 400px;
+        }
+        input, textarea, button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        img {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📸 Social Media Post Generator</h2>
+        <form method="get" action="/post/">
+            <label>Post Topic:</label>
+            <input type="text" name="topic" placeholder="e.g. Stay Fit" required>
+            
+            <label>Caption:</label>
+            <textarea name="caption" placeholder="e.g. Exercise daily for a better life!" required></textarea>
+            
+            <button type="submit">Generate Post</button>
+        </form>
+        
+        {% if image_url %}
+            <h3>Generated Post:</h3>
+            <img src="{{ image_url }}" alt="Generated Post">
+        {% endif %}
+    </div>
+</body>
+</html>

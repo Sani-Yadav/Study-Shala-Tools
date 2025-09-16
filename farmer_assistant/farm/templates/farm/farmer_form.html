@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}किसान जानकारी फॉर्म{% endblock %}
+
+{% block extra_css %}
+<!-- Base Styles -->
+<link rel="stylesheet" href="{% static 'farm/css/base.css' %}">
+<!-- Form Styles -->
+<link rel="stylesheet" href="{% static 'farm/css/forms.css' %}">
+<!-- Farmer Form Specific Styles -->
+<link rel="stylesheet" href="{% static 'farm/css/farmer-form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <div class="text-center">
+            <h1 class="mb-2">
+                <i class="fas fa-user-plus me-2"></i>
+                {% if form.instance.pk %}
+                    किसान जानकारी अपडेट करें
+                {% else %}
+                    नया किसान जोड़ें
+                {% endif %}
+            </h1>
+            <p class="mb-0">कृपया किसान की जानकारी दर्ज करें</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="form-card">
+                <div class="form-header">
+                    <h2 class="mb-0">
+                        <i class="fas fa-user-tie me-2"></i>
+                        {% if form.instance.pk %}
+                            किसान जानकारी अपडेट करें
+                        {% else %}
+                            नया किसान जोड़ें
+                        {% endif %}
+                    </h2>
+                </div>
+                
+                <div class="form-body">
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="form-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-user"></i> व्यक्तिगत जानकारी
+                            </h3>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="name" class="form-label">
+                                        किसान का नाम <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                    <div class="invalid-feedback">कृपया किसान का नाम दर्ज करें</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="phone" class="form-label">
+                                        मोबाइल नंबर <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">+91</span>
+                                        <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}" required>
+                                    </div>
+                                    <div class="form-text">केवल 10 अंकों का नंबर डालें</div>
+                                    <div class="invalid-feedback">कृपया वैध मोबाइल नंबर दर्ज करें</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="village" class="form-label">
+                                        गाँव/शहर <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="village" name="village" required>
+                                    <div class="invalid-feedback">कृपया गाँव या शहर का नाम दर्ज करें</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="land_area" class="form-label">
+                                        खेत क्षेत्रफल (एकड़ में) <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="number" class="form-control" id="land_area" name="land_area" step="0.01" min="0" required>
+                                    <div class="invalid-feedback">कृपया वैध क्षेत्रफल दर्ज करें</div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="crop" class="form-label">
+                                        फसल का नाम <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" id="crop" name="crop" required>
+                                    <div class="invalid-feedback">कृपया फसल का नाम दर्ज करें</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="sowing_date" class="form-label">
+                                        फसल बोने की तारीख <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="date" class="form-control" id="sowing_date" name="sowing_date" required>
+                                    <div class="invalid-feedback">कृपया वैध तारीख चुनें</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions mt-4">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-save me-2"></i>
+                                {% if form.instance.pk %}
+                                    अपडेट करें
+                                {% else %}
+                                    सहेजें
+                                {% endif %}
+                            </button>
+                            
+                            <a href="{% url 'farm:farmer_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>रद्द करें
+                            </a>
+                            
+                            <a href="{% url 'farm:farmer_list' %}" class="back-link float-end">
+                                <i class="fas fa-arrow-left me-2"></i>किसान सूची पर वापस जाएं
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

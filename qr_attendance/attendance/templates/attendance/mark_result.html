@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Status</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .result-container {
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .icon-success {
+            font-size: 4rem;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        .icon-warning {
+            font-size: 5rem;
+            color: #ffc107;
+            margin-bottom: 20px;
+        }
+        .icon-error {
+            font-size: 5rem;
+            color: #dc3545;
+            margin-bottom: 20px;
+        }
+        .btn-return {
+            padding: 10px 30px;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="result-container">
+            {% if 'already marked' in msg|lower %}
+                <div class="icon-warning">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <h2 class="mb-3">Attendance Already Marked</h2>
+                <p class="text-muted">{{ msg }}</p>
+            {% elif is_error %}
+                <div class="icon-error">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <h2 class="mb-3">Error</h2>
+                <p class="text-danger">{{ msg }}</p>
+            {% else %}
+                <div class="icon-success">
+                    {% if is_error %}
+                        <i class="bi bi-x-circle"></i>
+                    {% else %}
+                        <i class="bi bi-check-circle"></i>
+                    {% endif %}
+                </div>
+                <h3 class="mb-4">{{ msg }}</h3>
+                <div class="d-grid gap-3 mt-4">
+                    <a href="{% url 'attendance:download_all_attendance' %}" class="btn btn-success">
+                        <i class="bi bi-download me-2"></i>Download All Records
+                    </a>
+                    <a href="/attendance/mark/" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-left me-2"></i>Back to Mark Attendance
+                    </a>
+                </div>
+            {% endif %}
+            
+            <div class="mt-4">
+                {% if not is_error %}
+                <a href="/attendance/generate/" class="btn btn-outline-secondary btn-return ms-2">
+                    <i class="fas fa-qrcode me-2"></i>Generate New QR
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Health Assistance - StudyShala{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+
+<!-- Emergency Section -->
+<div class="emergency-section">
+    <!-- Emergency content -->
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-5">
+    <!-- Quick actions content -->
+</div>
+
+<h1 class="display-5 fw-bold mb-3">Health & Emergency Assistance</h1>
+<p class="lead text-muted">24/7 access to emergency contacts, healthcare facilities, and wellness resources</p>
+
+<!-- Emergency Contacts Section -->
+<div class="emergency-section">
+    <!-- Emergency contacts content -->
+</div>
+
+<!-- Nearby Hospitals Section -->
+<div id="hospitals" class="mb-5">
+    <div class="section-header mb-4">
+        <h2 class="section-title">
+            <i class="fas fa-hospital"></i>
+            <span>Nearby Healthcare Facilities</span>
+        </h2>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="searchName" class="form-label small text-muted">Hospital Name</label>
+                    <input type="text" class="form-control" id="searchName" placeholder="Search by name...">
+                </div>
+                <div class="col-md-3">
+                    <label for="filterState" class="form-label small text-muted">State</label>
+                    <select class="form-select" id="filterState">
+                        <option value="">All States</option>
+                        {% for state in states %}
+                            <option value="{{ state }}">{{ state }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="filterDistrict" class="form-label small text-muted">District</label>
+                    <select class="form-select" id="filterDistrict">
+                        <option value="">All Districts</option>
+                        {% for district in districts %}
+                            <option value="{{ district }}">{{ district }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button id="resetFilters" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-undo me-1"></i> Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-sm btn-outline-primary me-2">
+        <i class="fas fa-sync-alt me-1"></i> Refresh
+    </button>
+
+    {% if user.is_staff %}
+        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addHospitalModal">
+            <i class="fas fa-plus me-1"></i> Add Hospital
+        </button>
+    {% endif %}
+
+    {% if hospitals %}
+        <div class="row g-4" id="hospitalList">
+            {% for hospital in hospitals %}
+                <div class="col-md-6 col-lg-4 hospital-item" data-country="{{ hospital.country }}" data-state="{{ hospital.state }}" data-district="{{ hospital.district }}">
+                    <div class="hospital-card card h-100">
+                        <div class="card-header bg-white border-0 pb-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">{{ hospital.name }}</h5>
+                                {% if hospital.is_24x7 %}
+                                    <span class="hospital-badge bg-success bg-opacity-10 text-success">
+                                        <i class="fas fa-clock me-1"></i> 24/7 Open
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div class="text-muted small mt-1">
+                                <i class="fas fa-map-marker-alt me-1"></i> {{ hospital.state }}, {{ hospital.country }}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-start mb-3">
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                                    <i class="fas fa-hospital text-primary" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">{{ hospital.name }}</h5>
+                                    <p class="text-muted small mb-2">
+                                        <i class="fas fa-map-marker-alt text-muted me-1"></i> 
+                                        {{ hospital.address|truncatechars:40 }}
+                                    </p>
+                                    <div class="d-flex align-items-center">
+                                        {% if hospital.rating %}
+                                            <div class="text-warning me-2">
+                                                {% for i in "12345"|make_list %}
+                                                    {% if forloop.counter <= hospital.rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <small class="text-muted ms-1">({{ hospital.review_count }})</small>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                {% if hospital.phone %}
+                                    <a href="tel:{{ hospital.phone }}" class="text-decoration-none">
+                                        <i class="fas fa-phone-alt text-primary me-2"></i>
+                                        <span class="text-dark fw-medium">{{ hospital.phone }}</span>
+                                    </a>
+                                {% endif %}
+
+                                <div class="ms-auto">
+                                    {% if hospital.latitude and hospital.longitude %}
+                                        <a href="https://www.google.com/maps?q={{ hospital.latitude }},{{ hospital.longitude }}" 
+                                           target="_blank" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-directions me-1"></i> Map
+                                        </a>
+                                    {% endif %}
+                                    <button class="btn btn-sm btn-outline-secondary ms-2">
+                                        <i class="far fa-bookmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-hospital text-muted" style="font-size: 3rem; opacity: 0.3;"></i>
+            </div>
+            <h5 class="mb-3">No Hospitals Found</h5>
+            <p class="text-muted mb-4">We couldn't find any hospitals in your area. Try adjusting your search filters or location.</p>
+            <button class="btn btn-primary">
+                <i class="fas fa-sync-alt me-2"></i>Refresh
+            </button>
+        </div>
+    {% endif %}
+</div>
+
+{% if user.is_staff %}
+    <div class="text-center mb-5">
+        <a href="{% url 'admin:health_assist_hospital_add' %}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i> Add New Hospital
+        </a>
+    </div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all hospital items
+        const hospitalItems = document.querySelectorAll('.hospital-item');
+        const searchInput = document.getElementById('searchName');
+        const stateFilter = document.getElementById('filterState');
+        const districtFilter = document.getElementById('filterDistrict');
+        const resetButton = document.getElementById('resetFilters');
+
+        // Function to filter hospitals
+        function filterHospitals() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedState = stateFilter.value.toLowerCase();
+            const selectedDistrict = districtFilter.value.toLowerCase();
+
+            hospitalItems.forEach(item => {
+                const name = item.querySelector('.card-title').textContent.toLowerCase();
+                const state = item.dataset.state ? item.dataset.state.toLowerCase() : '';
+                const district = item.dataset.district ? item.dataset.district.toLowerCase() : '';
+
+                const nameMatch = name.includes(searchTerm);
+                const stateMatch = !selectedState || state === selectedState.toLowerCase();
+                const districtMatch = !selectedDistrict || district === selectedDistrict.toLowerCase();
+
+                if (nameMatch && stateMatch && districtMatch) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Add event listeners
+        searchInput.addEventListener('input', filterHospitals);
+        stateFilter.addEventListener('change', filterHospitals);
+        districtFilter.addEventListener('change', filterHospitals);
+
+        // Reset filters
+        resetButton.addEventListener('click', () => {
+            searchInput.value = '';
+            stateFilter.value = '';
+            districtFilter.value = '';
+            hospitalItems.forEach(item => {
+                item.style.display = 'block';
+            });
+        });
+
+        // Initialize filters
+        filterHospitals();
+    });
+</script>
+{% endblock %}

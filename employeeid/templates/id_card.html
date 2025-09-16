@@ -1,79 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>ID Card</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #f5f5f5;
-        }
-        .card {
-            width: 350px;
-            height: 500px;
-            background: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.15);
-            border-radius: 12px;
-            border: 1px solid #ccc;
-        }
-        .company {
-            text-align: center;
-            font-weight: bold;
-            font-size: 20px;
-            color: #007bff;
-            margin-bottom: 10px;
-        }
-        .photo {
-            text-align: center;
-        }
-        .photo img {
-            width: 120px;
-            height: 120px;
-            border-radius: 100px;
-            object-fit: cover;
-            border: 2px solid #007bff;
-        }
-        .info {
-            margin-top: 15px;
-            text-align: center;
-        }
-        .info h3 {
-            margin: 10px 0 5px;
-        }
-        .info p {
-            margin: 4px 0;
-            font-size: 14px;
-        }
-        .qr {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .qr img {
-            width: 90px;
-        }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <div class="company">{{ employee.company }}</div>
-        <div class="photo">
-            <img src="{{ employee.profile_image.url }}" alt="Profile">
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Employee ID Card - {{ employee.full_name }}{% endblock %}
+
+{% block extra_css %}
+<!-- Employee ID Card CSS -->
+<link rel="stylesheet" href="{% static 'employeeid/css/employeeid.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="id-card-container">
+    <div class="id-card">
+        <div class="id-card-company">{{ employee.company }}</div>
+        <div class="id-card-photo">
+            <img src="{{ employee.profile_image.url }}" alt="{{ employee.full_name }}" class="img-fluid">
         </div>
-        <div class="info">
+        <div class="id-card-info">
             <h3>{{ employee.full_name }}</h3>
             <p>{{ employee.designation }}</p>
             <p><strong>ID:</strong> {{ employee.employee_id }}</p>
-            <p><strong>Dept:</strong> {{ employee.department }}</p>
-            <p><strong>Join:</strong> {{ employee.join_date|date:"d M Y" }}</p>
-            <p><strong>Email:</strong> {{ employee.email }}</p>
+            <p><strong>Department:</strong> {{ employee.department }}</p>
+            <p><strong>Join Date:</strong> {{ employee.join_date|date:"d M Y" }}</p>
+            <p><strong>Email:</strong> {{ employee.email|default:"N/A" }}</p>
         </div>
-        <div class="qr">
-            <img src="{{ employee.qr_code.url }}" alt="QR Code">
+        <div class="id-card-qr">
+            <img src="{{ employee.qr_code.url }}" alt="Employee QR Code" class="img-fluid">
         </div>
     </div>
-</body>
-</html>
+    
+    {% if not request.GET.print %}
+    <div class="text-center mt-4">
+        <button class="btn btn-primary id-card-print">
+            <i class="fas fa-print me-2"></i>Print ID Card
+        </button>
+        <a href="{% url 'employeeid:upload_employee' %}" class="btn btn-outline-secondary ms-2">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Employee ID Card JavaScript -->
+<script src="{% static 'employeeid/js/employeeid.js' %}"></script>
+{% if request.GET.print %}
+<script>
+    // Auto-print when print parameter is in URL
+    document.addEventListener('DOMContentLoaded', function() {
+        window.print();
+        setTimeout(function() {
+            window.close();
+        }, 1000);
+    });
+</script>
+{% endif %}
+{% endblock %}

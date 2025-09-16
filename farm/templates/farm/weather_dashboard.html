@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<meta charset="UTF-8">
+{% endblock %}
+
+{% block extra_css %}
+<!-- Farm Module CSS -->
+<link rel="stylesheet" href="{% static 'farm/css/farm.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4 weather-dashboard">
+    <h2 class="mb-4">मौसम जानकारी (Weather Dashboard)</h2>
+    
+    <!-- Search Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" action="" class="row g-3">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" name="location" class="form-control" 
+                               placeholder="शहर, देश कोड (e.g., Lucknow,IN)" 
+                               value="{{ location|default:'' }}" required>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-cloud-sun me-2"></i>मौसम देखें
+                    </button>
+                </div>
+            </form>
+            <div class="mt-2 text-muted small">
+                उदाहरण: Mumbai,IN | Delhi,IN | London,UK | New York,US
+            </div>
+        </div>
+    </div>
+    
+    <!-- Current Weather Card -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">वर्तमान मौसम (Current Weather)</h4>
+        </div>
+        <div class="card-body">
+            {% if weather %}
+                <div class="text-center">
+                    <h3>{{ weather.main.temp|floatformat:0 }}°C</h3>
+                    <p>{{ weather.weather.0.description|title }}</p>
+                    <div class="mt-2">
+                        <p class="mb-1">न्यूनतम: {{ weather.main.temp_min|floatformat:0 }}°C</p>
+                        <p class="mb-1">अधिकतम: {{ weather.main.temp_max|floatformat:0 }}°C</p>
+                        <p class="mb-1">नमी: {{ weather.main.humidity }}%</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    मौसम की जानकारी उपलब्ध नहीं है | Weather information not available
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Weather Alerts -->
+    <div class="card">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">मौसम चेतावनी (Weather Alerts)</h4>
+        </div>
+        <div class="card-body">
+            {% if active_alerts %}
+                <div class="list-group">
+                    {% for alert in active_alerts %}
+                        <a href="{% url 'farm:weather_alert_detail' alert.id %}" 
+                           class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ alert.title }}</h5>
+                                <span class="badge bg-{% if alert.severity == 'high' %}danger{% elif alert.severity == 'medium' %}warning{% else %}info{% endif %}">
+                                    {{ alert.severity|title }}
+                                </span>
+                            </div>
+                            <p class="mb-1">{{ alert.description|truncatewords:20 }}</p>
+                            <small><i class="far fa-clock me-1"></i>मान्य: {{ alert.valid_until|date:"d/m/Y H:i"}} तक</small>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    No active weather alerts at this time | कोई सक्रिय मौसम चेतावनी नहीं है
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Farm Module JavaScript -->
+<script src="{% static 'farm/js/farm.js' %}"></script>
+{% endblock %}

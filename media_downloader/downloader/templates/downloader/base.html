@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}StudyShala Media - Download Movies, Videos & More{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --success-color: #4ade80;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #1e293b;
+            --light-color: #f8fafc;
+            --card-bg: #ffffff;
+            --body-bg: #f1f5f9;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+        }
+        
+        [data-bs-theme="dark"] {
+            --dark-color: #0f172a;
+            --light-color: #1e293b;
+            --card-bg: #1e293b;
+            --body-bg: #0f172a;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--body-bg);
+            color: var(--text-color);
+            line-height: 1.7;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: white !important;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .navbar-brand i {
+            font-size: 1.8rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-clip: padding-box;
+            -webkit-background-clip: padding-box;
+            -moz-background-clip: padding;
+            color: white;
+            font-weight: 600;
+            border: none;
+        }
+        
+        /* Navigation */
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white !important;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .btn-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .form-control, .form-select {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.25);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .supported-platforms {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .platform-icon {
+            font-size: 2rem;
+            margin: 0 10px;
+            color: #555;
+            transition: all 0.3s ease;
+        }
+        
+        .platform-icon:hover {
+            color: var(--primary-color);
+            transform: scale(1.2);
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'media_downloader:home' %}">
+                
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" 
+                           href="{% url 'media_downloader:home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'movies' in request.path %}active{% endif %}" 
+                           href="{% url 'media_downloader:search_movies' %}">
+                            <i class="fas fa-film me-1"></i> Movies
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-5">
+        <div class="container py-4">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <h5 class="mb-3">About StudyShala Media</h5>
+                    <p class="text-muted mb-0">Your one-stop destination for downloading movies, music, and more. High-quality content with fast downloads.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'media_downloader:home' %}" class="text-decoration-none text-muted">Home</a></li>
+                        <li class="mb-2"><a href="{% url 'media_downloader:search_movies' %}" class="text-decoration-none text-muted">Search Movies</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">Trending</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5 class="mb-3">Legal</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Terms of Service</a></li>
+                        <li class="mb-2"><a href="#" class="text-decoration-none text-muted">Privacy Policy</a></li>
+                        <li><a href="#" class="text-decoration-none text-muted">DMCA</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="mb-0 text-muted">&copy; {% now "Y" %} StudyShala Media. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="text-muted me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-muted me-3"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="text-muted me-3"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-muted"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.createElement('button');
+        themeToggle.className = 'theme-toggle ms-2';
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        themeToggle.setAttribute('aria-label', 'Toggle dark mode');
+        themeToggle.setAttribute('title', 'Toggle dark/light mode');
+        
+        // Check for saved theme preference or use system preference
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        const currentTheme = localStorage.getItem('theme');
+        
+        if (currentTheme === 'dark' || (!currentTheme && prefersDarkScheme.matches)) {
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        
+        // Toggle theme
+        themeToggle.addEventListener('click', () => {
+            const html = document.documentElement;
+            const theme = html.getAttribute('data-bs-theme');
+            
+            if (theme === 'dark') {
+                html.setAttribute('data-bs-theme', 'light');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-bs-theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+        
+        // Add theme toggle to navbar
+        document.addEventListener('DOMContentLoaded', () => {
+            const navbar = document.querySelector('.navbar-nav');
+            if (navbar) {
+                const li = document.createElement('li');
+                li.className = 'nav-item d-flex align-items-center';
+                li.appendChild(themeToggle);
+                navbar.appendChild(li);
+            }
+            
+            // Update active nav link
+            const currentPath = window.location.pathname;
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

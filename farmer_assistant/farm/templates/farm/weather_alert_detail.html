@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-{% if alert.severity == 'high' %}danger{% elif alert.severity == 'medium' %}warning{% else %}info{% endif %} text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{{ alert.title }}</h4>
+                <span class="badge bg-light text-dark">{{ alert.get_alert_type_display }}</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-{% if alert.severity == 'high' %}danger{% elif alert.severity == 'medium' %}warning{% else %}info{% endif %}" role="alert">
+                <h5 class="alert-heading">{{ alert.get_severity_display }} स्तर की चेतावनी</h5>
+                <hr>
+                <p class="mb-0">{{ alert.description }}</p>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h5>विवरण (Details):</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            प्रकार (Type):
+                            <span class="badge bg-primary rounded-pill">{{ alert.get_alert_type_display }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            गंभीरता (Severity):
+                            <span class="badge bg-{% if alert.severity == 'high' %}danger{% elif alert.severity == 'medium' %}warning{% else %}info{% endif %} rounded-pill">
+                                {{ alert.get_severity_display }}
+                            </span>
+                        </li>
+                        <li class="list-group-item">
+                            <i class="far fa-calendar-alt me-2"></i>प्रभावी तिथि (Valid From): 
+                            {{ alert.valid_from|date:"d M Y H:i" }}
+                        </li>
+                        {% if alert.valid_until %}
+                        <li class="list-group-item">
+                            <i class="far fa-calendar-times me-2"></i>समाप्ति तिथि (Valid Until): 
+                            {{ alert.valid_until|date:"d M Y H:i" }}
+                        </li>
+                        {% endif %}
+                        <li class="list-group-item">
+                            <i class="fas fa-map-marker-alt me-2"></i>स्थान (Location): 
+                            {{ alert.location }}
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>सुझाव (Recommendations):</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            {% if alert.alert_type == 'rain' %}
+                                <h6><i class="fas fa-umbrella me-2"></i>बारिश के लिए सुझाव:</h6>
+                                <ul>
+                                    <li>खेत की जल निकासी व्यवस्था जांचें</li>
+                                    <li>फसलों को अधिक पानी से बचाने के उपाय करें</li>
+                                    <li>आवश्यक दवाओं का छिड़काव करें</li>
+                                </ul>
+                            {% elif alert.alert_type == 'storm' %}
+                                <h6><i class="fas fa-wind me-2"></i>तूफान के लिए सुझाव:</h6>
+                                <ul>
+                                    <li>फसलों को ढकने का प्रबंध करें</li>
+                                    <li>पेड़-पौधों को सहारा दें</li>
+                                    <li>आवश्यक उपकरण सुरक्षित स्थान पर रखें</li>
+                                </ul>
+                            {% elif alert.alert_type == 'hail' %}
+                                <h6><i class="fas fa-cloud-meatball me-2"></i>ओलावृष्टि के लिए सुझाव:</h6>
+                                <ul>
+                                    <li>फसलों को ढकने का प्रबंध करें</li>
+                                    <li>ग्रीनहाउस या पॉलीहाउस की सुरक्षा सुनिश्चित करें</li>
+                                    <li>ओलों के बाद फसलों का निरीक्षण करें</li>
+                                </ul>
+                            {% elif alert.alert_type == 'drought' %}
+                                <h6><i class="fas fa-tint-slash me-2"></i>सूखे के लिए सुझाव:</h6>
+                                <ul>
+                                    <li>जल संरक्षण के उपाय अपनाएं</li>
+                                    <li>ड्रिप सिंचाई जैसी कुशल सिंचाई विधियों का उपयोग करें</li>
+                                    <li>सूखा प्रतिरोधी फसलों पर विचार करें</li>
+                                </ul>
+                            {% else %}
+                                <p>कृपया स्थानीय कृषि विभाग या मौसम केंद्र से संपर्क करें।</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a href="{% url 'farm:weather_dashboard' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>वापस मौसम डैशबोर्ड पर जाएं
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

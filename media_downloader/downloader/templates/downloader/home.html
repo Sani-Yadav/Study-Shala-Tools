@@ -1,0 +1,172 @@
+{% extends 'downloader/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-gradient">Media Downloader</h1>
+        <p class="lead text-muted">Download videos, music, and images from 1000+ sites</p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Video Download Card -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 rounded-4">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0 text-center"><i class="fas fa-film me-2"></i> Video Download</h5>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <form action="{% url 'media_downloader:download_media' %}" method="post" class="d-flex flex-column h-100">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="video_url" class="form-label">Video URL</label>
+                            <div class="input-group">
+                                <input type="text" id="video_url" name="url" class="form-control" 
+                                       placeholder="https://www.youtube.com/watch?v=..." required>
+                                <input type="hidden" name="media_type" value="video">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quality</label>
+                            <select name="quality" class="form-select">
+                                <option value="best">Best Available</option>
+                                <option value="1080">1080p (Full HD)</option>
+                                <option value="720">720p (HD)</option>
+                                <option value="480">480p</option>
+                                <option value="360">360p</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 mt-auto">
+                            <i class="fas fa-download me-2"></i> Download Video
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Audio Download Card -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 rounded-4">
+                <div class="card-header bg-success text-white py-3">
+                    <h5 class="mb-0 text-center"><i class="fas fa-music me-2"></i> Audio Download</h5>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <form action="{% url 'media_downloader:download_media' %}" method="post" class="d-flex flex-column h-100">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="audio_url" class="form-label">Audio/Video URL</label>
+                            <div class="input-group">
+                                <input type="text" id="audio_url" name="url" class="form-control" 
+                                       placeholder="https://www.youtube.com/watch?v=..." required>
+                                <input type="hidden" name="media_type" value="audio">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Format</label>
+                            <select name="format" class="form-select">
+                                <option value="mp3">MP3 (Best Quality)</option>
+                                <option value="m4a">M4A</option>
+                                <option value="wav">WAV</option>
+                                <option value="aac">AAC</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100 mt-auto">
+                            <i class="fas fa-music me-2"></i> Download Audio
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Image Download Card -->
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 rounded-4">
+                <div class="card-header bg-warning text-dark py-3">
+                    <h5 class="mb-0 text-center"><i class="fas fa-image me-2"></i> Image Download</h5>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <form action="{% url 'media_downloader:download_media' %}" method="post" class="d-flex flex-column h-100">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="image_url" class="form-label">Image URL</label>
+                            <div class="input-group">
+                                <input type="text" id="image_url" name="url" class="form-control" 
+                                       placeholder="https://example.com/image.jpg" required>
+                                <input type="hidden" name="media_type" value="image">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Format</label>
+                            <select name="format" class="form-select">
+                                <option value="original">Original Format</option>
+                                <option value="jpg">JPG</option>
+                                <option value="png">PNG</option>
+                                <option value="webp">WebP</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100 mt-auto">
+                            <i class="fas fa-download me-2"></i> Download Image
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Latest Content Section -->
+    <div class="mt-5">
+        {% if latest_content.movies %}
+        <div class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h4">Latest Movies</h2>
+                <a href="{% url 'media_downloader:search_movies' %}?q=movie" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+                {% for movie in latest_content.movies %}
+                <div class="col">
+                    <a href="{% url 'media_downloader:movie_detail' movie.id %}" class="text-decoration-none text-dark">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <img src="{{ movie.poster|default:'/static/images/placeholder.jpg' }}" 
+                                 class="card-img-top" 
+                                 alt="{{ movie.title }}"
+                                 style="height: 200px; object-fit: cover;">
+                            <div class="card-body p-2">
+                                <h6 class="card-title mb-0 text-truncate">{{ movie.title }}</h6>
+                                <small class="text-muted">{{ movie.year }}</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if latest_content.series %}
+        <div class="mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h4">Latest Web Series</h2>
+                <a href="{% url 'media_downloader:search_movies' %}?q=series" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+            <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-6 g-3">
+                {% for series in latest_content.series %}
+                <div class="col">
+                    <a href="{% url 'media_downloader:movie_detail' series.id %}" class="text-decoration-none text-dark">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <img src="{{ series.poster|default:'/static/images/placeholder.jpg' }}" 
+                                 class="card-img-top" 
+                                 alt="{{ series.title }}"
+                                 style="height: 200px; object-fit: cover;">
+                            <div class="card-body p-2">
+                                <h6 class="card-title mb-0 text-truncate">{{ series.title }}</h6>
+                                <small class="text-muted">{{ series.year }}</small>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

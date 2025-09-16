@@ -1,0 +1,276 @@
+/* Farm Module - Main Styles */
+
+/* Weather Dashboard */
+.weather-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.weather-card:hover {
+    transform: translateY(-5px);
+}
+
+.weather-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.weather-temp {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #0d6efd;
+}
+
+.weather-details {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+/* Alert Cards */
+.alert-card {
+    border-left: 4px solid #dc3545;
+    transition: all 0.3s ease;
+}
+
+.alert-card.alert-warning {
+    border-left-color: #ffc107;
+}
+
+.alert-card.alert-info {
+    border-left-color: #0dcaf0;
+}
+
+.alert-card:hover {
+    transform: translateX(5px);
+}
+
+/* Farmer List */
+.farmer-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.farmer-card:hover {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+}
+
+/* Form Styles */
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .weather-card {
+        margin-bottom: 1rem;
+    }
+    
+    .form-container {
+        padding: 1rem;
+    }
+}
+
+/* Form Styles */
+.farm-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.farm-form .card {
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: none;
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.farm-form .card-header {
+    background-color: #4e73df;
+    color: white;
+    border-radius: 0 !important;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.farm-form .card-body {
+    padding: 2rem;
+}
+
+.farm-form .form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #5a5c69;
+}
+
+.farm-form .form-control,
+.farm-form .form-select {
+    border-radius: 0.35rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d3e2;
+    width: 100%;
+    margin-bottom: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.farm-form .form-control:focus,
+.farm-form .form-select:focus {
+    border-color: #bac8f3;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+.farm-form .btn-primary {
+    background-color: #4e73df;
+    border-color: #4e73df;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+}
+
+.farm-form .btn-primary:hover {
+    background-color: #2e59d9;
+    border-color: #2653d4;
+    transform: translateY(-2px);
+}
+
+.farm-form .form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: -0.75rem;
+    margin-bottom: 1rem;
+}
+
+/* Farmer List Styles */
+.farmer-list-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(44,62,80,0.08);
+    padding: 32px 24px;
+}
+
+.farmer-list-title {
+    color: #2c3e50;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 32px;
+    letter-spacing: 1px;
+}
+
+.add-farmer-btn {
+    display: inline-block;
+    background: linear-gradient(90deg,#4CAF50 60%,#3498db 100%);
+    color: #fff;
+    padding: 12px 28px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 8px;
+    text-decoration: none;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.08);
+    transition: background 0.2s, transform 0.2s;
+}
+
+.add-farmer-btn:hover {
+    background: linear-gradient(90deg,#3498db 60%,#4CAF50 100%);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.farmer-table-container {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(44,62,80,0.06);
+}
+
+.farmer-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.farmer-table th {
+    background: #3498db;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 10px;
+    border: none;
+}
+
+.farmer-table td {
+    padding: 12px 10px;
+    font-size: 14px;
+    border-bottom: 1px solid #e0e6ed;
+    background: #f9fbfc;
+    vertical-align: middle;
+}
+
+.farmer-table tr:last-child td {
+    border-bottom: none;
+}
+
+.farmer-table tr:hover td {
+    background-color: #f0f7ff;
+}
+
+.action-links a {
+    margin-right: 10px;
+    font-size: 18px;
+    color: #3498db;
+    text-decoration: none;
+    transition: color 0.2s, transform 0.2s;
+    display: inline-block;
+}
+
+.action-links a:hover {
+    color: #4CAF50;
+    transform: scale(1.1);
+}
+
+.no-farmers {
+    text-align: center;
+    color: #6c757d;
+    font-size: 16px;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+/* Responsive adjustments for forms and tables */
+@media (max-width: 768px) {
+    .farm-form .card-body {
+        padding: 1.5rem;
+    }
+    
+    .farm-form .btn-primary {
+        padding: 0.65rem 1.5rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .weather-card {
+        box-shadow: none;
+        border: 1px solid #dee2e6;
+    }
+}

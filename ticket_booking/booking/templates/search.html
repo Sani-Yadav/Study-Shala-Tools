@@ -1,0 +1,23 @@
+<form method="get" action="">
+    <input type="text" name="starting_city" placeholder="From">
+    <input type="text" name="ending_city" placeholder="To">
+    <input type="date" name="date">
+    <button type="submit">Search</button>
+  </form>
+  
+  {% if results %}
+    <h3>Available Options:</h3>
+    <ul>
+      {% for bus in results %}
+        <li>
+          {{ bus.name }} - {{ bus.time }} - ₹{{ bus.price }}
+          <a href="{% url 'book_ticket' bus.id %}">Book</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    {% if request.GET %}
+      <p>No buses/trains found for your search.</p>
+    {% endif %}
+  {% endif %}
+  
